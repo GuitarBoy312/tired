@@ -4,4 +4,4 @@ pathlib
 pydub
 speechrecognition
 gtts
-langdetect
+langdetect==1.0.9
