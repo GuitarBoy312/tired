@@ -13,8 +13,8 @@ client = OpenAI(
   api_key=st.secrets["openai_api_key"], 
 )
 # 텍스트를 음성으로 변환하여 재생하는 함수
-def text_to_speech(text, lang='ko'):
-    tts = gTTS(text=text, lang=lang)
+def text_to_speech(text, lang='en'):
+    tts = gTTS(text=text, lang='en')
     audio_file = BytesIO()
     tts.write_to_fp(audio_file)
     audio_file.seek(0)
