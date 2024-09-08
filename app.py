@@ -6,9 +6,6 @@ import speech_recognition as sr
 from pydub import AudioSegment
 from pydub.playback import play
 from io import BytesIO
-from streamlit_webrtc import webrtc_streamer, AudioProcessorBase, ClientSettings
-import numpy as np
-import av
 
 # OpenAI API 키 설정 (OpenAI 계정에서 발급받은 API 키를 넣어주세요)
 client = OpenAI(
@@ -90,12 +87,6 @@ def text_to_speech_openai(text):
 
 # Streamlit UI
 # # 페이지 설정
-st.set_page_config(
-    page_title="인공지능 영어 선생님",   # 페이지 제목
-    page_icon="🤖",        # 페이지 아이콘
-    layout="centered",         # 레이아웃: "centered" (기본값), "wide" (넓은 화면)
-)
-
 
 st.title("✨인공지능 영어 선생님👱🏾‍♂️")
 st.header("감정에 대한 대화하기")
@@ -151,4 +142,5 @@ if st.button("목소리로 대화하기"):
         if response:
             st.write(f"챗봇: {response}")
             text_to_speech_openai(response)  # ChatGPT 응답을 음성으로 변환하여 재생
+
 
