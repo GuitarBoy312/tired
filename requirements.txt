@@ -3,5 +3,4 @@ streamlit
 pathlib
 pydub
 speechrecognition
-streamlit-webrtc
 gtts
