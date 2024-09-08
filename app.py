@@ -6,6 +6,9 @@ import speech_recognition as sr
 from pydub import AudioSegment
 from pydub.playback import play
 from io import BytesIO
+from streamlit_webrtc import webrtc_streamer, AudioProcessorBase, ClientSettings
+import numpy as np
+import av
 
 # OpenAI API 키 설정 (OpenAI 계정에서 발급받은 API 키를 넣어주세요)
 client = OpenAI(
@@ -148,5 +151,4 @@ if st.button("목소리로 대화하기"):
         if response:
             st.write(f"챗봇: {response}")
             text_to_speech_openai(response)  # ChatGPT 응답을 음성으로 변환하여 재생
-
 
