@@ -2,4 +2,3 @@ openai
 streamlit
 pathlib
 pydub
-io
