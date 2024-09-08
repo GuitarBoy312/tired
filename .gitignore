@@ -1,3 +1,4 @@
 *.toml
 *.mp3
 *.wav
+.streamlit/secrets.toml
