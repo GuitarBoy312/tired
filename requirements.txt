@@ -3,4 +3,3 @@ streamlit
 pathlib
 pydub
 speechrecognition
-pyaudio
