@@ -2,4 +2,4 @@ openai
 streamlit
 pathlib
 pydub
-speech_recognition
+speechrecognition
