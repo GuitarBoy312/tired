@@ -1,17 +1,14 @@
 import streamlit as st
-from openai import OpenAI
 import speech_recognition as sr
 from gtts import gTTS
 from io import BytesIO
-import os
-from pydub import AudioSegment
-from pydub.playback import play
-from langdetect import detect
+from openai import OpenAI
 
 # OpenAI API 키 설정 (OpenAI 계정에서 발급받은 API 키를 넣어주세요)
 client = OpenAI(
-  api_key=st.secrets["openai_api_key"], 
+    api_key=st.secrets["openai_api_key"], 
 )
+
 # 음성 인식 및 변환
 recognizer = sr.Recognizer()
 
@@ -54,33 +51,31 @@ I’m Happy
 - hungry
 - thirsty
 - tired
-             
              '''},
-            {"role": "user", "content": user_input}
+            {"role": "user", "content": prompt}
         ]
     )
     return response.choices[0].message.content
 
-# 음성을 텍스트로 변환하고, 텍스트를 다시 음성으로 변환
+# 텍스트를 음성으로 변환하고 Streamlit에서 재생
 def text_to_speech(text):
-    tts = gTTS(text=text, lang='en' or 'ko')
+    tts = gTTS(text=text, lang='en')  # ChatGPT는 영어로 응답하므로 lang='en'
     audio_file = BytesIO()
     tts.write_to_fp(audio_file)
     audio_file.seek(0)
     
-    # pydub을 사용하여 재생
-    sound = AudioSegment.from_file(audio_file, format="mp3")
-    play(sound)
+    # Streamlit 오디오 위젯을 사용하여 음성 재생
+    st.audio(audio_file, format='audio/mp3')
 
 # Streamlit UI
 st.title("음성 기반 ChatGPT 챗봇")
 
 # 음성 입력 버튼
 if st.button("음성으로 질문하기"):
-    user_input = recognize_speech()
+    user_input = recognize_speech()  # 음성 인식
     if user_input:
         st.text(f"사용자: {user_input}")
-        response = get_chatgpt_response(user_input)
+        response = get_chatgpt_response(user_input)  # ChatGPT 응답 받기
         st.text(f"챗봇: {response}")
         
         # 응답을 음성으로 변환하여 재생
