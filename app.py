@@ -3,7 +3,7 @@ import speech_recognition as sr
 from gtts import gTTS
 from io import BytesIO
 from openai import OpenAI
-from streamlit_audiorec import audiorec  # 음성 녹음 라이브러리
+from st_audiorec import st_audiorec  # st_audiorec 라이브러리 사용
 
 # OpenAI API 키 설정 (OpenAI 계정에서 발급받은 API 키를 넣어주세요)
 client = OpenAI(
@@ -71,11 +71,11 @@ def text_to_speech(text):
 st.title("음성 기반 ChatGPT 챗봇")
 
 # 음성 녹음 위젯
-audio_bytes = audiorec()
+wav_audio_data = st_audiorec()
 
-if audio_bytes is not None:
-    # 음성을 텍스트로 변환
-    user_input = recognize_speech(audio_bytes)
+if wav_audio_data is not None:
+    # 녹음된 음성을 텍스트로 변환
+    user_input = recognize_speech(wav_audio_data)
     if user_input:
         st.text(f"사용자: {user_input}")
         response = get_chatgpt_response(user_input)  # ChatGPT 응답 받기
@@ -83,4 +83,5 @@ if audio_bytes is not None:
         
         # 응답을 음성으로 변환하여 재생
         text_to_speech(response)
+
 
