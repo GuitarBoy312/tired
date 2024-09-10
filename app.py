@@ -80,4 +80,3 @@ if st.button("음성으로 질문하기"):
         
         # 응답을 음성으로 변환하여 재생
         text_to_speech(response)
-
