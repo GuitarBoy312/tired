@@ -3,8 +3,8 @@ pydub
 speechrecognition
 langdetect
 streamlit-webrtc
-streamlit==1.38.0
-gtts==2.5.3
-openai==1.44.0
-speechrecognition==3.10.4
-st_audiorec==0.1.0
+streamlit
+gtts
+openai
+speechrecognition
+st_audiorec
