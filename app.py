@@ -1,21 +1,28 @@
 import streamlit as st
-from openai import OpenAI
-import os
-from pathlib import Path
-import speech_recognition as sr
-from pydub import AudioSegment
-from pydub.playback import play
-from io import BytesIO
+from streamlit_webrtc import webrtc_streamer, AudioProcessorBase, WebRtcMode
+import av
+import openai
 
-# OpenAI API 키 설정 (OpenAI 계정에서 발급받은 API 키를 넣어주세요)
-client = OpenAI(
-  api_key=st.secrets["openai_api_key"], 
-)
+# OpenAI API 키 설정 (필요한 경우 secrets로 처리)
+client = openai.OpenAI(api_key=st.secrets["openai_api_key"])
+
+# 음성 처리 클래스 정의
+class SpeechToTextProcessor(AudioProcessorBase):
+    def __init__(self):
+        self.audio_data = b""
+
+    def recv_audio(self, frames: av.AudioFrame) -> av.AudioFrame:
+        # 오디오 데이터를 누적
+        self.audio_data += frames.to_ndarray().tobytes()
+        return frames
+
+    def get_audio_data(self):
+        return self.audio_data
 
 # ChatGPT API 호출
 def get_chatgpt_response(prompt):
     response = client.chat.completions.create(
-        model="gpt-4o-mini",  # 사용할 모델
+        model="gpt-4",
         messages=[
             {"role": "system", "content": 
              '''
@@ -39,30 +46,12 @@ I’m Happy
 - hungry
 - thirsty
 - tired
-             
-             '''
+              '''
              },
-            {"role": "user", "content": user_input_text}
+            {"role": "user", "content": prompt}
         ]
     )
     return response.choices[0].message.content
-
-
-# 음성 파일 업로드 및 변환 함수
-def upload_and_transcribe():
-    uploaded_file = st.file_uploader("음성 파일을 업로드하세요", type=["wav", "mp3"])
-    
-    if uploaded_file is not None:
-        st.success("파일 업로드가 완료되었습니다. 변환 중입니다...")
-        # Whisper API를 사용해 업로드된 음성을 텍스트로 변환
-        transcription = client.audio.transcriptions.create(
-            model="whisper-1",
-            file=uploaded_file
-        )
-        return transcription.text
-    else:
-        st.info("음성 파일을 업로드해 주세요.")
-
 
 # 텍스트를 음성으로 변환하고 재생하는 함수
 def text_to_speech_openai(text):
@@ -79,64 +68,39 @@ def text_to_speech_openai(text):
     except Exception as e:
         st.error(f"텍스트를 음성으로 변환하는 중 오류가 발생했습니다: {e}")
 
-
-
 # Streamlit UI
-# # 페이지 설정
+st.title("🎤 인공지능 영어 선생님과 대화")
+st.write("마이크로 말을 하고 결과를 확인하세요.")
 
-st.title("✨인공지능 영어 선생님👱🏾‍♂️")
-st.header("감정에 대한 대화하기")
+# WebRTC 스트리머 (음성 녹음)
+webrtc_ctx = webrtc_streamer(
+    key="speech-to-text",
+    mode=WebRtcMode.SENDRECV,
+    audio_processor_factory=SpeechToTextProcessor,
+    media_stream_constraints={"audio": True, "video": False},
+    async_processing=True,
+)
 
-# #가로 줄
-st.divider()
+# 음성 녹음 및 변환 처리
+if webrtc_ctx.audio_processor:
+    audio_data = webrtc_ctx.audio_processor.get_audio_data()
 
-# #헤더 
-st.header(
-    '''
-사용방법
-1. '음성으로 질문하기' 버튼을 눌러 파란색이 활성화되면 인공지능 선생님에게 질문하기
-2. 재생버튼(세모)를 눌러 선생님의 대답을 듣기
-3. '음성으로 질문하기' 버튼을 눌러 파란색이 활성화되면 대답하고 바로 질문하기
-'''
-)  
+    if len(audio_data) > 0:
+        # OpenAI Whisper API를 사용해 음성을 텍스트로 변환
+        st.info("음성을 변환 중입니다...")
+        transcription = client.audio.transcriptions.create(
+            model="whisper-1",
+            file=audio_data,
+        )
 
-# #가로 줄
-st.divider()
-
-# #헤더 
-st.subheader("다음 보기 중 골라서 질문해 보세요")
-
-# #마크다운
-st.markdown("1️⃣ Are you happy?<br>2️⃣ Are you sad?<br>3️⃣ Are you angry?<br>4️⃣ Are you hungry?<br>5️⃣ Are you thirsty?<br>6️⃣ Are you tired?", unsafe_allow_html=True)
-
-# #가로 줄
-st.divider()
-
-# #헤더 
-st.subheader("선생님의 질문을 듣고, 다음 보기 중 골라서 대답해 보세요.")
-
-st.markdown("1️⃣ Yes, I am.<br>2️⃣ No, I'm not.", unsafe_allow_html=True)
-
-# 음성 녹음 버튼
-st.markdown("""
-    <style>
-    .stButton > button {
-        background-color: #4CAF50; /* 초록색 */
-        color: white;
-        border-radius: 5px;
-        width: 200px;
-        height: 50px;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-
-if st.button("목소리로 대화하기"):
-    user_input_text = upload_and_transcribe()  # 음성을 텍스트로 변환
-    if user_input_text:
+        user_input_text = transcription['text']
         st.write(f"사용자: {user_input_text}")
+
+        # ChatGPT 응답 생성
         response = get_chatgpt_response(user_input_text)
-        if response:
-            st.write(f"챗봇: {response}")
-            text_to_speech_openai(response)  # ChatGPT 응답을 음성으로 변환하여 재생
+        st.write(f"챗봇: {response}")
+
+        # 응답을 음성으로 변환하여 재생
+        text_to_speech_openai(response)
 
 
