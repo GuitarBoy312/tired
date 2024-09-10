@@ -3,6 +3,7 @@ import speech_recognition as sr
 from gtts import gTTS
 from io import BytesIO
 from openai import OpenAI
+from streamlit_audiorec import audiorec  # 음성 녹음 라이브러리
 
 # OpenAI API 키 설정 (OpenAI 계정에서 발급받은 API 키를 넣어주세요)
 client = OpenAI(
@@ -12,18 +13,17 @@ client = OpenAI(
 # 음성 인식 및 변환
 recognizer = sr.Recognizer()
 
-def recognize_speech():
-    with sr.Microphone() as source:
-        st.info("음성 입력을 기다리고 있습니다...")
-        audio = recognizer.listen(source)
-        st.success("음성 입력이 완료되었습니다.")
-        try:
-            text = recognizer.recognize_google(audio, language='ko-KR')
-            return text
-        except sr.UnknownValueError:
-            return "음성을 인식할 수 없습니다."
-        except sr.RequestError as e:
-            return f"음성 인식 서비스에 문제가 발생했습니다: {e}"
+def recognize_speech(audio_bytes):
+    audio = sr.AudioFile(BytesIO(audio_bytes))
+    with audio as source:
+        audio_data = recognizer.record(source)
+    try:
+        text = recognizer.recognize_google(audio_data, language='ko-KR')
+        return text
+    except sr.UnknownValueError:
+        return "음성을 인식할 수 없습니다."
+    except sr.RequestError as e:
+        return f"음성 인식 서비스에 문제가 발생했습니다: {e}"
 
 # ChatGPT API 호출
 def get_chatgpt_response(prompt):
@@ -70,9 +70,12 @@ def text_to_speech(text):
 # Streamlit UI
 st.title("음성 기반 ChatGPT 챗봇")
 
-# 음성 입력 버튼
-if st.button("음성으로 질문하기"):
-    user_input = recognize_speech()  # 음성 인식
+# 음성 녹음 위젯
+audio_bytes = audiorec()
+
+if audio_bytes is not None:
+    # 음성을 텍스트로 변환
+    user_input = recognize_speech(audio_bytes)
     if user_input:
         st.text(f"사용자: {user_input}")
         response = get_chatgpt_response(user_input)  # ChatGPT 응답 받기
@@ -80,3 +83,4 @@ if st.button("음성으로 질문하기"):
         
         # 응답을 음성으로 변환하여 재생
         text_to_speech(response)
+
