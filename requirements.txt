@@ -5,4 +5,4 @@ langdetect
 streamlit
 gtts
 openai
-st_audiorec
+
