@@ -2,9 +2,7 @@ pathlib
 pydub
 speechrecognition
 langdetect
-streamlit-webrtc
 streamlit
 gtts
 openai
-speechrecognition
 st_audiorec
