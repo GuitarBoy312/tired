@@ -131,7 +131,7 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 if st.button("목소리로 대화하기"):
-    user_input_text = record_and_transcribe()  # 음성을 텍스트로 변환
+    user_input_text = upload_and_transcribe()  # 음성을 텍스트로 변환
     if user_input_text:
         st.write(f"사용자: {user_input_text}")
         response = get_chatgpt_response(user_input_text)
