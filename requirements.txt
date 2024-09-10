@@ -4,6 +4,6 @@ pathlib
 pydub
 speechrecognition
 gtts
-langdetect==1.0.9
+langdetect
 streamlit-webrtc
 streamlit-audiorec
