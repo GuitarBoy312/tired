@@ -75,7 +75,7 @@ def text_to_speech_openai(text):
         speech_file_path = Path("speech.mp3")
         response = client.audio.speech.create(
             model="tts-1",
-            voice="alloy",  # OpenAI TTS 모델에서 사용할 음성
+            voice="shimmer",  # OpenAI TTS 모델에서 사용할 음성
             input=text
         )
         with open(speech_file_path, "wb") as f:
@@ -83,6 +83,7 @@ def text_to_speech_openai(text):
         st.audio(str(speech_file_path))  # 음성을 Streamlit에서 재생
     except Exception as e:
         st.error(f"텍스트를 음성으로 변환하는 중 오류가 발생했습니다: {e}")
+
 
 
 # Streamlit UI
