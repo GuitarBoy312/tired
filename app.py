@@ -48,26 +48,21 @@ I’m Happy
     return response.choices[0].message.content
 
 
-# 음성을 녹음하고 텍스트로 변환하는 함수 (Whisper API 사용)
-def record_and_transcribe():
-    recognizer = sr.Recognizer()
-    with sr.Microphone() as source:
-        st.info("음성을 녹음 중입니다. 말을 시작하세요...")
-        audio = recognizer.listen(source)
-        st.success("녹음이 완료되었습니다. 변환 중입니다...")
-
-        # 녹음한 오디오를 파일로 저장
-        audio_file_path = Path("recorded_audio.wav")
-        with open(audio_file_path, "wb") as f:
-            f.write(audio.get_wav_data())
-
-        # Whisper API를 사용해 음성을 텍스트로 변환
-        with open(audio_file_path, "rb") as audio_file:
-            transcription = client.audio.transcriptions.create(
-                model="whisper-1",
-                file=audio_file
-            )
+# 음성 파일 업로드 및 변환 함수
+def upload_and_transcribe():
+    uploaded_file = st.file_uploader("음성 파일을 업로드하세요", type=["wav", "mp3"])
+    
+    if uploaded_file is not None:
+        st.success("파일 업로드가 완료되었습니다. 변환 중입니다...")
+        # Whisper API를 사용해 업로드된 음성을 텍스트로 변환
+        transcription = client.audio.transcriptions.create(
+            model="whisper-1",
+            file=uploaded_file
+        )
         return transcription.text
+    else:
+        st.info("음성 파일을 업로드해 주세요.")
+
 
 # 텍스트를 음성으로 변환하고 재생하는 함수
 def text_to_speech_openai(text):
