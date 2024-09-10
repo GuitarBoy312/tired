@@ -2,7 +2,7 @@ import streamlit as st
 from openai import OpenAI
 from io import BytesIO
 from pathlib import Path
-from st_audiorec import st_audiorec  # Import streamlit-audiorec
+from st_audiorec import st_audiorec  # streamlit-audiorec import
 
 # OpenAI API 키 설정
 client = OpenAI(
@@ -46,9 +46,14 @@ I’m Happy
 
 # 음성을 녹음하고 텍스트로 변환하는 함수 (Whisper API 사용)
 def record_and_transcribe():
+    # streamlit session state로 오디오 데이터를 저장
+    if 'audio_data' not in st.session_state:
+        st.session_state['audio_data'] = None
+
     wav_audio_data = st_audiorec()  # 오디오 녹음 시작
 
     if wav_audio_data is not None:
+        st.session_state['audio_data'] = wav_audio_data  # 오디오 데이터를 세션에 저장
         st.audio(wav_audio_data, format='audio/wav')  # 녹음된 오디오 재생
 
         # 오디오 데이터를 BytesIO로 변환
@@ -61,6 +66,8 @@ def record_and_transcribe():
             file=audio_bytes
         )
         return transcription['text']
+    else:
+        return None
 
 
 # 텍스트를 음성으로 변환하고 재생하는 함수
@@ -108,3 +115,4 @@ if st.button("목소리로 대화하기"):
         if response:
             st.write(f"챗봇: {response}")
             text_to_speech_openai(response)  # ChatGPT 응답을 음성으로 변환하여 재생
+
