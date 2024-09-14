@@ -5,4 +5,5 @@ langdetect
 streamlit
 gtts
 openai
+pyaudio
 
