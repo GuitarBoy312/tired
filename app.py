@@ -43,22 +43,44 @@ I'm Happy
         ]
     )
     return response.choices[0].message.content
+# 음성을 녹음하고 텍스트로 변환하는 함수
+def record_and_transcribe():
+    audio = audiorecorder("클릭하여 녹음하기", "녹음중...클릭하여 저장하기")
+    if (audio.duration_seconds > 0) and (st.session_state.get("check_reset", False) == False):
+    
+    #recognizer = sr.Recognizer()
+    #with sr.Microphone() as source:
+        #st.info("음성을 녹음 중입니다. 말을 시작하세요...")
+        #audio = recognizer.listen(source)
+        #st.success("녹음이 완료되었습니다. 변환 중입니다...")
 
+        # 녹음한 오디오를 파일로 저장
+        audio_file_path = Path("recorded_audio.wav")
+        with open(audio_file_path, "wb") as f:
+            f.write(audio.get_wav_data())
+
+        # Whisper API를 사용해 음성을 텍스트로 변환
+        with open(audio_file_path, "rb") as audio_file:
+            transcription = client.audio.transcriptions.create(
+                model="whisper-1",
+                file=audio_file
+            )
+        return transcription.text
 # STT 함수
-def STT(audio):
+#def STT(audio):
     # 파일 저장
-    filename = 'input.mp3'
-    audio.export(filename, format="mp3")
+    #filename = 'input.mp3'
+    #audio.export(filename, format="mp3")
     
     # 음원 파일 열기
-    with open(filename, "rb") as audio_file:
+    #with open(filename, "rb") as audio_file:
         # Whisper 모델을 활용해 텍스트 얻기
-        transcript = client.audio.transcriptions.create(model="whisper-1", file=audio_file)
+        #transcript = client.audio.transcriptions.create(model="whisper-1", file=audio_file)
     
     # 파일 삭제
-    os.remove(filename)
+    #os.remove(filename)
     
-    return transcript.text
+    #return transcript.text
 
 # Streamlit UI
 
@@ -78,21 +100,38 @@ def display_messages():
             st.chat_message("user").write(message['content'])
         else:
             st.chat_message("assistant").write(message['content'])
+# 버튼 배치
+col1, col2 = st.columns([1,1])
 
-# 기능 구현 공간
-col1, col2 = st.columns(2)
 with col1:
+    if st.button("목소리로 대화하기", use_container_width=True): 
+        user_input_text = record_and_transcribe()
+        if user_input_text:
+            st.session_state['chat_history'].append({"role": "user", "content": user_input_text})
+            response = get_chatgpt_response(user_input_text)
+            if response:
+                text_to_speech_openai(response)
+                st.session_state['chat_history'].append({"role": "chatbot", "content": response})    
+   
+with col2:
+    if st.button("처음부터 다시하기",type="primary"):
+        st.session_state['chat_history'] = []
+        st.rerun()
+        
+# 기능 구현 공간
+#col1, col2 = st.columns(2)
+#with col1:
     # 왼쪽 영역 작성
-    st.subheader("질문하기")
+    #st.subheader("질문하기")
     # 음성 녹음 아이콘 추가
-    audio = audiorecorder("클릭하여 녹음하기", "녹음중...클릭하여 저장하기")
-    if (audio.duration_seconds > 0) and (st.session_state.get("check_reset", False) == False):
+    #audio = audiorecorder("클릭하여 녹음하기", "녹음중...클릭하여 저장하기")
+    #if (audio.duration_seconds > 0) and (st.session_state.get("check_reset", False) == False):
         # 음성 재생 
-        st.audio(audio.export().read())
+        #st.audio(audio.export().read())
         # 음원 파일에서 텍스트 추출
-        audio_bytes = io.BytesIO(audio.export().read())
-        audio_segment = AudioSegment.from_file(audio_bytes, format="mp3")
-        question = STT(audio_segment)
+        #audio_bytes = io.BytesIO(audio.export().read())
+        #audio_segment = AudioSegment.from_file(audio_bytes, format="mp3")
+        #question = STT(audio_segment)
 
         # 채팅을 시각화하기 위해 질문 내용 저장
         #now = datetime.now().strftime("%H:%M")
