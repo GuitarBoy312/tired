@@ -63,9 +63,10 @@ def record_and_transcribe():
     #audio_file_path = Path("recorded_audio.wav")
     #with open(audio_file_path, "wb") as f:
         #f.write(audio.get_wav_data())
-
+        audio_file = open("audio.wav", "rb")    
+    
         # Whisper API를 사용해 음성을 텍스트로 변환
-        with open("audio.wav", "rb") as audio_file:
+        with open(audio_file, "rb") as audio_file:
             transcription = client.audio.transcriptions.create(
                 model="whisper-1",
                 file=audio_file
