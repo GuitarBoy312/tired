@@ -1,9 +1,4 @@
-pathlib
 pydub
-speechrecognition
-langdetect
 streamlit
-gtts
 openai
-pyaudio
 
