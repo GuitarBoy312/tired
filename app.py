@@ -2,6 +2,7 @@ import streamlit as st
 from openai import OpenAI
 import os
 from pathlib import Path
+from audiorecorder import audiorecorder
 
 # OpenAI API 키 설정
 client = OpenAI(api_key=st.secrets["openai_api_key"])
