@@ -50,6 +50,8 @@ def record_and_transcribe():
     if len(audio_data) > 0:
         st.success("녹음이 완료되었습니다. 변환 중입니다...")
         audio_file_path = Path("recorded_audio.wav")
+        st.audio(audio_data.tobytes(), format="audio/wav")  # 녹음된 오디오를 재생
+
         
         # 녹음된 오디오 파일을 저장
         wav_file = BytesIO(audio_data.tobytes())  # tobytes()로 바이너리 데이터 변환
