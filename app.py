@@ -2,6 +2,7 @@ import streamlit as st
 from openai import OpenAI
 import os
 from pathlib import Path
+from datetime import datetime
 from audiorecorder import audiorecorder
 
 # OpenAI API 키 설정
@@ -41,6 +42,23 @@ I'm Happy
     )
     return response.choices[0].message.content
 
+# STT 함수
+def STT(audio):
+    # 파일 저장
+    filename = 'input.mp3'
+    with open(filename, "wb") as f:
+        f.write(audio.getbuffer())
+    
+    # 음원 파일 열기
+    with open(filename, "rb") as audio_file:
+        # Whisper 모델을 활용해 텍스트 얻기
+        transcript = client.audio.transcriptions.create(model="whisper-1", file=audio_file)
+    
+    # 파일 삭제
+    os.remove(filename)
+    
+    return transcript["text"]
+
 # Streamlit UI
 
 # 메인 화면 구성
@@ -60,27 +78,28 @@ def display_messages():
         else:
             st.chat_message("assistant").write(message['content'])
 
-# 오디오 녹음
-audio_bytes = audiorecoder()
+# 기능 구현 공간
+col1, col2 = st.columns(2)
+with col1:
+    # 왼쪽 영역 작성
+    st.subheader("질문하기")
+    # 음성 녹음 아이콘 추가
+    audio = audiorecorder("클릭하여 녹음하기", "녹음중...")
+    if (audio.duration_seconds > 0) and (st.session_state.get("check_reset", False) == False):
+        # 음성 재생 
+        st.audio(audio.export().read())
+        # 음원 파일에서 텍스트 추출
+        question = STT(audio)
 
-if audio_bytes:
-    st.audio(audio_bytes, format="audio/wav")
-    # 오디오 파일을 저장
-    audio_file_path = Path("recorded_audio.wav")
-    with open(audio_file_path, "wb") as f:
-        f.write(audio_bytes)
-
-    # Whisper API를 사용해 음성을 텍스트로 변환
-    with open(audio_file_path, "rb") as audio_file:
-        transcription = client.audio.transcriptions.create(
-            model="whisper-1",
-            file=audio_file
-        )
-    user_input_text = transcription.text
-    st.session_state['chat_history'].append({"role": "user", "content": user_input_text})
-    response = get_chatgpt_response(user_input_text)
-    if response:
-        st.session_state['chat_history'].append({"role": "chatbot", "content": response})
+        # 채팅을 시각화하기 위해 질문 내용 저장
+        now = datetime.now().strftime("%H:%M")
+        st.session_state["chat"] = st.session_state.get("chat", []) + [("user", now, question)]
+        # GPT 모델에 넣을 프롬프트를 위해 질문 내용 저장
+        st.session_state["messages"] = st.session_state.get("messages", []) + [{"role": "user", "content": question}]
+        response = get_chatgpt_response(question)
+        if response:
+            st.session_state["chat"] = st.session_state["chat"] + [("chatbot", now, response)]
+            st.session_state["messages"] = st.session_state["messages"] + [{"role": "assistant", "content": response}]
 
 # 메시지 표시
 display_messages()
