@@ -58,7 +58,7 @@ def STT(audio):
     # 파일 삭제
     os.remove(filename)
     
-    return transcript["text"]
+    return transcript.text
 
 # Streamlit UI
 
