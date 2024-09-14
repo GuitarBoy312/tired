@@ -11,7 +11,7 @@ import io
 client = OpenAI(api_key=st.secrets["openai_api_key"])
 
 # ChatGPT API 호출
-def get_chatgpt_response(messages):
+def get_chatgpt_response(question):
     response = client.chat.completions.create(
         model="gpt-4o-mini",  # 사용할 모델
         messages=[
@@ -39,7 +39,7 @@ I'm Happy
 - tired
              '''
              },
-            {"role": "user", "content": messages}
+            {"role": "user", "content": question}
         ]
     )
     return response.choices[0].message.content
@@ -95,14 +95,14 @@ with col1:
         question = STT(audio_segment)
 
         # 채팅을 시각화하기 위해 질문 내용 저장
-        now = datetime.now().strftime("%H:%M")
-        st.session_state["chat"] = st.session_state.get("chat", []) + [("user", now, question)]
+        #now = datetime.now().strftime("%H:%M")
+        #st.session_state["chat"] = st.session_state.get("chat", []) + [("user", now, question)]
         # GPT 모델에 넣을 프롬프트를 위해 질문 내용 저장
-        st.session_state["messages"] = st.session_state.get("messages", []) + [{"role": "user", "content": question}]
-        response = get_chatgpt_response(question)
-        if response:
-            st.session_state["chat"] = st.session_state["chat"] + [("chatbot", now, response)]
-            st.session_state["messages"] = st.session_state["messages"] + [{"role": "assistant", "content": response}]
+        #st.session_state["messages"] = st.session_state.get("messages", []) + [{"role": "user", "content": question}]
+        #response = get_chatgpt_response(question)
+        #if response:
+            #st.session_state["chat"] = st.session_state["chat"] + [("chatbot", now, response)]
+            #st.session_state["messages"] = st.session_state["messages"] + [{"role": "assistant", "content": response}]
 
 # 메시지 표시
 display_messages()
