@@ -58,14 +58,14 @@ def record_and_transcribe():
         # To play audio in frontend:
         st.audio(audio.export().read())  
         # To save audio to a file, use pydub export method:
-        audio.export("recorded_audio.wav", format="wav")
+        audio.export("audio.wav", format="wav")
         # 녹음한 오디오를 파일로 저장
-    audio_file_path = Path("recorded_audio.wav")
-    with open(audio_file_path, "wb") as f:
-        f.write(audio.get_wav_data())
+    #audio_file_path = Path("recorded_audio.wav")
+    #with open(audio_file_path, "wb") as f:
+        #f.write(audio.get_wav_data())
 
         # Whisper API를 사용해 음성을 텍스트로 변환
-        with open(audio_file_path, "rb") as audio_file:
+        with open("audio.wav", "rb") as audio_file:
             transcription = client.audio.transcriptions.create(
                 model="whisper-1",
                 file=audio_file
