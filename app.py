@@ -2,11 +2,8 @@ import streamlit as st
 from openai import OpenAI
 import os
 from pathlib import Path
-from audiorecorder import audiorecorder
-from pydub import AudioSegment
-from pydub.playback import play
 from io import BytesIO
-
+from audiorecorder import audiorecorder  # audiorecorder 모듈 가져오기
 
 # OpenAI API 키 설정
 client = OpenAI(api_key=st.secrets["openai_api_key"])
@@ -38,8 +35,7 @@ I'm Happy
 - hungry
 - thirsty
 - tired
-             
-             '''
+              '''
              },
             {"role": "user", "content": prompt}
         ]
@@ -48,19 +44,26 @@ I'm Happy
 
 # 음성을 녹음하고 텍스트로 변환하는 함수
 def record_and_transcribe():
-    # 파일 저장
-    filename='audio.wav'
-    audio.export(filename, format="wav")
-    # 음원 파일 열기
-    audio_file = open(filename, "rb")  
-      
-    # Whisper API를 사용해 음성을 텍스트로 변환
-    with open(audio_file, "rb") as audio_file:
-        transcription = client.audio.transcriptions.create(
-            model="whisper-1",
-            file=audio_file
-        )
-    return transcription.text
+    st.info("음성을 녹음 중입니다. 말을 시작하세요...")
+    audio_data = audiorecorder()  # audiorecorder로 음성 녹음
+    
+    if len(audio_data) > 0:
+        st.success("녹음이 완료되었습니다. 변환 중입니다...")
+        audio_file_path = Path("recorded_audio.wav")
+        
+        # 녹음된 오디오 파일을 저장
+        wav_file = BytesIO(audio_data)
+        with open(audio_file_path, "wb") as f:
+            f.write(wav_file.read())
+        
+        # Whisper API를 사용해 음성을 텍스트로 변환
+        with open(audio_file_path, "rb") as audio_file:
+            transcription = client.audio.transcriptions.create(
+                model="whisper-1",
+                file=audio_file
+            )
+        return transcription.text
+    return None
 
 # 텍스트를 음성으로 변환하고 재생하는 함수
 def text_to_speech_openai(text):
@@ -89,11 +92,6 @@ def display_messages():
         else:
             st.chat_message("assistant").write(message['content'])
 
-#with st.chat_message("user"):
-    #st.write("Hello 👋")
-
-
-
 
 # Streamlit UI
 
@@ -103,14 +101,11 @@ st.subheader("감정에 대한 대화하기")
 st.divider()
 
 
-# 버튼 스타일 설정
-
-
 # 버튼 배치
 col1, col2 = st.columns([1,1])
 
 with col1:
-    #if st.button("목소리로 대화하기", use_container_width=True)
+    if st.button("목소리로 대화하기", use_container_width=True): 
         user_input_text = record_and_transcribe()
         if user_input_text:
             st.session_state['chat_history'].append({"role": "user", "content": user_input_text})
@@ -123,31 +118,15 @@ with col2:
     if st.button("처음부터 다시하기",type="primary"):
         st.session_state['chat_history'] = []
         st.rerun()
-    
-
-    audio = audiorecorder("Click to record", "Click to stop recording")
-    if (audio.duration_seconds > 0) and (st.session_state["check_reset"]==False):
-        # To play audio in frontend:
-        st.audio(audio.export().read())  
-        # To save audio to a file, use pydub export method:
-        audio.export("audio.wav", format="wav")
-        # 녹음한 오디오를 파일로 저장
-    #audio_file_path = Path("recorded_audio.wav")
-    #with open(audio_file_path, "wb") as f:
-        #f.write(audio.get_wav_data())
 
 
-
-
-
-
-# #사이드바 구성
+# 사이드바 구성
 with st.sidebar:
     st.header(
         '''
 사용방법
 1. '음성으로 질문하기' 버튼을 눌러 파란색이 활성화되면 인공지능 선생님에게 질문하기
-2. 재생버튼(세모)를 눌러 선생님의 대답을 듣기
+2. 재생버튼(세모)을 눌러 선생님의 대답을 듣기
 3. '음성으로 질문하기' 버튼을 눌러 파란색이 활성화되면 대답하고 바로 질문하기
 '''
     )
@@ -160,7 +139,6 @@ with st.sidebar:
 
     st.subheader("선생님의 질문을 듣고, 다음 보기 중 골라서 대답해 보세요.")
     st.markdown("1️⃣ Yes, I am.<br>2️⃣ No, I'm not.", unsafe_allow_html=True)
-
 
 # 메시지 표시
 display_messages()
