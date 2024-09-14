@@ -48,30 +48,19 @@ I'm Happy
 
 # 음성을 녹음하고 텍스트로 변환하는 함수
 def record_and_transcribe():
-    #recognizer = sr.Recognizer()
-    audio = audiorecorder("Click to record", "Click to stop recording")
-    #with sr.Microphone() as source:
-        #st.info("음성을 녹음 중입니다. 말을 시작하세요...")
-        #audio = recognizer.listen(source)
-        #st.success("녹음이 완료되었습니다. 변환 중입니다...")
-    if (audio.duration_seconds > 0) and (st.session_state["check_reset"]==False):
-        # To play audio in frontend:
-        st.audio(audio.export().read())  
-        # To save audio to a file, use pydub export method:
-        audio.export("audio.wav", format="wav")
-        # 녹음한 오디오를 파일로 저장
-    #audio_file_path = Path("recorded_audio.wav")
-    #with open(audio_file_path, "wb") as f:
-        #f.write(audio.get_wav_data())
-        audio_file = open("audio.wav", "rb")    
-    
-        # Whisper API를 사용해 음성을 텍스트로 변환
-        with open(audio_file, "rb") as audio_file:
-            transcription = client.audio.transcriptions.create(
-                model="whisper-1",
-                file=audio_file
-            )
-        return transcription.text
+    # 파일 저장
+    filename='audio.wav'
+    audio.export(filename, format="wav")
+    # 음원 파일 열기
+    audio_file = open(filename, "rb")  
+      
+    # Whisper API를 사용해 음성을 텍스트로 변환
+    with open(audio_file, "rb") as audio_file:
+        transcription = client.audio.transcriptions.create(
+            model="whisper-1",
+            file=audio_file
+        )
+    return transcription.text
 
 # 텍스트를 음성으로 변환하고 재생하는 함수
 def text_to_speech_openai(text):
@@ -121,7 +110,7 @@ st.divider()
 col1, col2 = st.columns([1,1])
 
 with col1:
-    if st.button("목소리로 대화하기", use_container_width=True): 
+    #if st.button("목소리로 대화하기", use_container_width=True)
         user_input_text = record_and_transcribe()
         if user_input_text:
             st.session_state['chat_history'].append({"role": "user", "content": user_input_text})
@@ -136,7 +125,16 @@ with col2:
         st.rerun()
     
 
-
+    audio = audiorecorder("Click to record", "Click to stop recording")
+    if (audio.duration_seconds > 0) and (st.session_state["check_reset"]==False):
+        # To play audio in frontend:
+        st.audio(audio.export().read())  
+        # To save audio to a file, use pydub export method:
+        audio.export("audio.wav", format="wav")
+        # 녹음한 오디오를 파일로 저장
+    #audio_file_path = Path("recorded_audio.wav")
+    #with open(audio_file_path, "wb") as f:
+        #f.write(audio.get_wav_data())
 
 
 
