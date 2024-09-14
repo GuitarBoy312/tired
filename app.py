@@ -4,6 +4,8 @@ import os
 from pathlib import Path
 from datetime import datetime
 from audiorecorder import audiorecorder
+from pydub import AudioSegment
+import io
 
 # OpenAI API 키 설정
 client = OpenAI(api_key=st.secrets["openai_api_key"])
@@ -46,8 +48,7 @@ I'm Happy
 def STT(audio):
     # 파일 저장
     filename = 'input.mp3'
-    with open(filename, "wb") as f:
-        f.write(audio.getbuffer())
+    audio.export(filename, format="mp3")
     
     # 음원 파일 열기
     with open(filename, "rb") as audio_file:
