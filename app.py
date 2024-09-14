@@ -52,7 +52,7 @@ def record_and_transcribe():
         audio_file_path = Path("recorded_audio.wav")
         
         # 녹음된 오디오 파일을 저장
-        wav_file = BytesIO(audio_data)
+        wav_file = BytesIO(audio_data.tobytes())  # tobytes()로 바이너리 데이터 변환
         with open(audio_file_path, "wb") as f:
             f.write(wav_file.read())
         
