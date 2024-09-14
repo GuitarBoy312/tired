@@ -46,19 +46,21 @@ I'm Happy
 # 음성을 녹음하는 함수
 def record_and_transcribe():
     audio = audiorecorder("클릭하여 녹음하기", "녹음중...클릭하여 저장하기")
-    if (audio.duration_seconds > 0) and (st.session_state.get("check_reset", False) == False):
+    if len(audio) > 0:
+        audio.export("recorded_audio.wav", format="wav")
+
     
     #recognizer = sr.Recognizer()
     #with sr.Microphone() as source:
         #st.info("음성을 녹음 중입니다. 말을 시작하세요...")
         #audio = recognizer.listen(source)
         #st.success("녹음이 완료되었습니다. 변환 중입니다...")
-        audio_bytes = io.BytesIO(audio.export().read())
-        audio_segment = AudioSegment.from_file(audio_bytes, format="mp3")
+        #audio_bytes = io.BytesIO(audio.export().read())
+        #audio_segment = AudioSegment.from_file(audio_bytes, format="mp3")
         # 녹음한 오디오를 파일로 저장
-        audio_file_path = Path(audio_segment)
+        audio_file_path = Path("recorded_audio.wav")
         with open(audio_file_path, "wb") as f:
-            #f.write(audio.get_wav_data())
+            f.write(audio.get_wav_data())
 
         # Whisper API를 사용해 음성을 텍스트로 변환
         with open(audio_file_path, "rb") as audio_file:
