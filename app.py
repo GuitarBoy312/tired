@@ -61,7 +61,7 @@ def display_messages():
             st.chat_message("assistant").write(message['content'])
 
 # 오디오 녹음
-audio_bytes = st.audio_recorder()
+audio_bytes = audiorecoder()
 
 if audio_bytes:
     st.audio(audio_bytes, format="audio/wav")
