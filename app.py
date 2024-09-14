@@ -43,7 +43,7 @@ I'm Happy
         ]
     )
     return response.choices[0].message.content
-# 음성을 녹음하고 텍스트로 변환하는 함수
+# 음성을 녹음하는 함수
 def record_and_transcribe():
     audio = audiorecorder("클릭하여 녹음하기", "녹음중...클릭하여 저장하기")
     if (audio.duration_seconds > 0) and (st.session_state.get("check_reset", False) == False):
