@@ -44,13 +44,7 @@ I'm Happy
 
 # 음성을 녹음하고 텍스트로 변환하는 함수
 def record_and_transcribe():
-    audio_data = audiorecorder()  # audiorecorder로 음성 녹음
     
-    if len(audio_data) > 0:
-        st.success("녹음이 완료되었습니다. 변환 중입니다...")
-        audio_file_path = Path("recorded_audio.wav")
-        # 녹음된 오디오를 재생
-        st.audio(audio.export().read())
         
         # 녹음된 오디오 파일을 저장
         wav_file = BytesIO(audio_data.tobytes())  # tobytes()로 바이너리 데이터 변환
@@ -106,7 +100,14 @@ st.divider()
 col1, col2 = st.columns([1,1])
 
 with col1:
-    if st.button("목소리로 대화하기", use_container_width=True): 
+    audio_data = audiorecorder()  # audiorecorder로 음성 녹음
+    
+    if len(audio_data) > 0:
+        st.success("녹음이 완료되었습니다. 변환 중입니다...")
+        audio_file_path = Path("recorded_audio.wav")
+        # 녹음된 오디오를 재생
+        st.audio(audio.export().read())
+    
         user_input_text = record_and_transcribe()
         if user_input_text:
             st.session_state['chat_history'].append({"role": "user", "content": user_input_text})
