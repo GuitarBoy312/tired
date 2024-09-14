@@ -90,7 +90,9 @@ with col1:
         # 음성 재생 
         st.audio(audio.export().read())
         # 음원 파일에서 텍스트 추출
-        question = STT(audio)
+        audio_bytes = io.BytesIO(audio.export().read())
+        audio_segment = AudioSegment.from_file(audio_bytes, format="mp3")
+        question = STT(audio_segment)
 
         # 채팅을 시각화하기 위해 질문 내용 저장
         now = datetime.now().strftime("%H:%M")
