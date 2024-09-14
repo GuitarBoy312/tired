@@ -2,11 +2,6 @@ import streamlit as st
 from openai import OpenAI
 import os
 from pathlib import Path
-import speech_recognition as sr
-from pydub import AudioSegment
-from pydub.playback import play
-from io import BytesIO
-
 
 # OpenAI API 키 설정
 client = OpenAI(api_key=st.secrets["openai_api_key"])
@@ -38,7 +33,6 @@ I'm Happy
 - hungry
 - thirsty
 - tired
-             
              '''
              },
             {"role": "user", "content": prompt}
@@ -46,41 +40,12 @@ I'm Happy
     )
     return response.choices[0].message.content
 
-# 음성을 녹음하고 텍스트로 변환하는 함수
-def record_and_transcribe():
-    recognizer = sr.Recognizer()
-    with sr.Microphone() as source:
-        st.info("음성을 녹음 중입니다. 말을 시작하세요...")
-        audio = recognizer.listen(source)
-        st.success("녹음이 완료되었습니다. 변환 중입니다...")
+# Streamlit UI
 
-        # 녹음한 오디오를 파일로 저장
-        audio_file_path = Path("recorded_audio.wav")
-        with open(audio_file_path, "wb") as f:
-            f.write(audio.get_wav_data())
-
-        # Whisper API를 사용해 음성을 텍스트로 변환
-        with open(audio_file_path, "rb") as audio_file:
-            transcription = client.audio.transcriptions.create(
-                model="whisper-1",
-                file=audio_file
-            )
-        return transcription.text
-
-# 텍스트를 음성으로 변환하고 재생하는 함수
-def text_to_speech_openai(text):
-    try:
-        speech_file_path = Path("speech.mp3")
-        response = client.audio.speech.create(
-            model="tts-1",
-            voice="shimmer",  # OpenAI TTS 모델에서 사용할 음성
-            input=text
-        )
-        with open(speech_file_path, "wb") as f:
-            f.write(response.content)  # 음성 파일을 저장
-        st.audio(str(speech_file_path))  # 음성을 Streamlit에서 재생
-    except Exception as e:
-        st.error(f"텍스트를 음성으로 변환하는 중 오류가 발생했습니다: {e}")
+# 메인 화면 구성
+st.title("✨인공지능 영어 선생님👱🏾‍♂️")
+st.subheader("감정에 대한 대화하기")
+st.divider()
 
 # 채팅 히스토리 초기화
 if 'chat_history' not in st.session_state:
@@ -94,50 +59,32 @@ def display_messages():
         else:
             st.chat_message("assistant").write(message['content'])
 
-#with st.chat_message("user"):
-    #st.write("Hello 👋")
+# 오디오 녹음
+audio_bytes = st.audio_recorder()
 
+if audio_bytes:
+    st.audio(audio_bytes, format="audio/wav")
+    # 오디오 파일을 저장
+    audio_file_path = Path("recorded_audio.wav")
+    with open(audio_file_path, "wb") as f:
+        f.write(audio_bytes)
 
+    # Whisper API를 사용해 음성을 텍스트로 변환
+    with open(audio_file_path, "rb") as audio_file:
+        transcription = client.audio.transcriptions.create(
+            model="whisper-1",
+            file=audio_file
+        )
+    user_input_text = transcription.text
+    st.session_state['chat_history'].append({"role": "user", "content": user_input_text})
+    response = get_chatgpt_response(user_input_text)
+    if response:
+        st.session_state['chat_history'].append({"role": "chatbot", "content": response})
 
+# 메시지 표시
+display_messages()
 
-# Streamlit UI
-
-# 메인 화면 구성
-st.title("✨인공지능 영어 선생님👱🏾‍♂️")
-st.subheader("감정에 대한 대화하기")
-st.divider()
-
-
-# 버튼 스타일 설정
-
-
-# 버튼 배치
-col1, col2 = st.columns([1,1])
-
-with col1:
-    if st.button("목소리로 대화하기", use_container_width=True): 
-        user_input_text = record_and_transcribe()
-        if user_input_text:
-            st.session_state['chat_history'].append({"role": "user", "content": user_input_text})
-            response = get_chatgpt_response(user_input_text)
-            if response:
-                text_to_speech_openai(response)
-                st.session_state['chat_history'].append({"role": "chatbot", "content": response})    
-   
-with col2:
-    if st.button("처음부터 다시하기",type="primary"):
-        st.session_state['chat_history'] = []
-        st.rerun()
-    
-
-
-
-
-
-
-
-
-# #사이드바 구성
+# 사이드바 구성
 with st.sidebar:
     st.header(
         '''
@@ -156,7 +103,3 @@ with st.sidebar:
 
     st.subheader("선생님의 질문을 듣고, 다음 보기 중 골라서 대답해 보세요.")
     st.markdown("1️⃣ Yes, I am.<br>2️⃣ No, I'm not.", unsafe_allow_html=True)
-
-
-# 메시지 표시
-display_messages()
