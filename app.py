@@ -11,7 +11,7 @@ import io
 client = OpenAI(api_key=st.secrets["openai_api_key"])
 
 # ChatGPT API 호출
-def get_chatgpt_response(prompt):
+def get_chatgpt_response(messages):
     response = client.chat.completions.create(
         model="gpt-4o-mini",  # 사용할 모델
         messages=[
@@ -39,7 +39,7 @@ I'm Happy
 - tired
              '''
              },
-            {"role": "user", "content": prompt}
+            {"role": "user", "content": messages}
         ]
     )
     return response.choices[0].message.content
