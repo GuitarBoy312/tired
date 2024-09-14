@@ -54,7 +54,7 @@ def record_and_transcribe():
         #st.info("음성을 녹음 중입니다. 말을 시작하세요...")
         #audio = recognizer.listen(source)
         #st.success("녹음이 완료되었습니다. 변환 중입니다...")
-        if len(audio) > 0:
+    if len(audio) > 0:
         # To play audio in frontend:
         st.audio(audio.export().read())  
         # To save audio to a file, use pydub export method:
