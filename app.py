@@ -51,6 +51,9 @@ def record_and_transcribe():
     if len(audio) > 0:
         st.success("녹음이 완료되었습니다. 변환 중입니다...")
         
+        # To play audio in frontend:
+        st.audio(audio.export().read()) 
+        
         # 녹음한 오디오를 파일로 저장
         audio_file_path = Path("recorded_audio.wav")
         audio.export(str(audio_file_path), format="wav")
