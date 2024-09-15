@@ -104,7 +104,7 @@ st.subheader("💕감정이나 느낌에 대한 대화하기")
 st.divider()
 
 #확장 설명
-with st.expander("오른쪽 화살표를 눌러 사용방법을 읽어보세요 ❗", expanded=False):
+with st.expander("❗❗ 박스를 펼쳐 사용방법을 읽어보세요 👉👉", expanded=False):
     st.markdown(
     """     
     1️⃣ '녹음 시작' 버튼을 눌러 인공지능 선생님에게 질문하기<br>
