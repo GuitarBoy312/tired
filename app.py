@@ -2,8 +2,10 @@ import streamlit as st
 from openai import OpenAI
 import os
 from pathlib import Path
+from audiorecorder import audiorecorder
+from pydub import AudioSegment
+from pydub.playback import play
 from io import BytesIO
-from audiorecorder import audiorecorder  # audiorecorder 모듈 가져오기
 
 # OpenAI API 키 설정
 client = OpenAI(api_key=st.secrets["openai_api_key"])
@@ -35,7 +37,7 @@ I'm Happy
 - hungry
 - thirsty
 - tired
-              '''
+             '''
              },
             {"role": "user", "content": prompt}
         ]
@@ -44,13 +46,15 @@ I'm Happy
 
 # 음성을 녹음하고 텍스트로 변환하는 함수
 def record_and_transcribe():
+    audio = audiorecorder("녹음 시작", "녹음 중지", pause_prompt="일시 정지")
     
+    if len(audio) > 0:
+        st.success("녹음이 완료되었습니다. 변환 중입니다...")
         
-        # 녹음된 오디오 파일을 저장
-        wav_file = BytesIO(audio_data.tobytes())  # tobytes()로 바이너리 데이터 변환
-        with open(audio_file_path, "wb") as f:
-            f.write(wav_file.read())
-        
+        # 녹음한 오디오를 파일로 저장
+        audio_file_path = Path("recorded_audio.wav")
+        audio.export(str(audio_file_path), format="wav")
+
         # Whisper API를 사용해 음성을 텍스트로 변환
         with open(audio_file_path, "rb") as audio_file:
             transcription = client.audio.transcriptions.create(
@@ -58,6 +62,7 @@ def record_and_transcribe():
                 file=audio_file
             )
         return transcription.text
+    
     return None
 
 # 텍스트를 음성으로 변환하고 재생하는 함수
@@ -87,7 +92,6 @@ def display_messages():
         else:
             st.chat_message("assistant").write(message['content'])
 
-
 # Streamlit UI
 
 # 메인 화면 구성
@@ -95,41 +99,31 @@ st.title("✨인공지능 영어 선생님👱🏾‍♂️")
 st.subheader("감정에 대한 대화하기")
 st.divider()
 
-
 # 버튼 배치
 col1, col2 = st.columns([1,1])
 
 with col1:
-    audio_data = audiorecorder()  # audiorecorder로 음성 녹음
-    
-    if len(audio_data) > 0:
-        st.success("녹음이 완료되었습니다. 변환 중입니다...")
-        audio_file_path = Path("recorded_audio.wav")
-        # 녹음된 오디오를 재생
-        st.audio(audio.export().read())
-    
-        user_input_text = record_and_transcribe()
-        if user_input_text:
-            st.session_state['chat_history'].append({"role": "user", "content": user_input_text})
-            response = get_chatgpt_response(user_input_text)
-            if response:
-                text_to_speech_openai(response)
-                st.session_state['chat_history'].append({"role": "chatbot", "content": response})    
-   
+    user_input_text = record_and_transcribe()
+    if user_input_text:
+        st.session_state['chat_history'].append({"role": "user", "content": user_input_text})
+        response = get_chatgpt_response(user_input_text)
+        if response:
+            text_to_speech_openai(response)
+            st.session_state['chat_history'].append({"role": "chatbot", "content": response})    
+
 with col2:
-    if st.button("처음부터 다시하기",type="primary"):
+    if st.button("처음부터 다시하기", type="primary"):
         st.session_state['chat_history'] = []
         st.rerun()
-
 
 # 사이드바 구성
 with st.sidebar:
     st.header(
         '''
 사용방법
-1. '음성으로 질문하기' 버튼을 눌러 파란색이 활성화되면 인공지능 선생님에게 질문하기
-2. 재생버튼(세모)을 눌러 선생님의 대답을 듣기
-3. '음성으로 질문하기' 버튼을 눌러 파란색이 활성화되면 대답하고 바로 질문하기
+1. '녹음 시작' 버튼을 눌러 인공지능 선생님에게 질문하기
+2. 재생버튼(세모)를 눌러 선생님의 대답을 듣기
+3. '녹음 시작' 버튼을 다시 눌러 대답하고 바로 질문하기
 '''
     )
     st.divider()
