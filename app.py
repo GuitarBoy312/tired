@@ -110,13 +110,13 @@ with st.expander("사용방법", expanded=True):
     1️⃣ '녹음 시작' 버튼을 눌러 인공지능 선생님에게 질문하기<br>
     2️⃣ '녹음 완료' 버튼을 누르고 내<br> 
     3️⃣ '녹음 시작' 버튼을 다시 눌러 대답하고 바로 질문하기
+    """
+    ,  unsafe_allow_html=True)
     st.write("다음 보기 중 골라서 질문해 보세요")
     st.markdown("1️⃣ Are you happy?<br>2️⃣ Are you sad?<br>3️⃣ Are you angry?<br>4️⃣ Are you hungry?<br>5️⃣ Are you thirsty?<br>6️⃣ Are you tired?", unsafe_allow_html=True)
     st.divider()
     st.write("선생님의 질문을 듣고, 다음 보기 중 골라서 대답해 보세요.")
     st.markdown("1️⃣ Yes, I am.<br>2️⃣ No, I'm not.", unsafe_allow_html=True)
-    """
-    ,  unsafe_allow_html=True)
     
 # 버튼 배치
 col1, col2 = st.columns([1,1])
