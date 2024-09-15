@@ -50,7 +50,7 @@ def record_and_transcribe():
     
     if len(audio) > 0:
         st.success("녹음이 완료되었습니다. 변환 중입니다...")
-        
+        st.write("내가 한 말 듣기")
         # To play audio in frontend:
         st.audio(audio.export().read()) 
         
@@ -107,7 +107,7 @@ with st.expander("사용방법", expanded=True):
     st.markdown(
     """     
     1️⃣ '녹음 시작' 버튼을 눌러 인공지능 선생님에게 질문하기<br>
-    2️⃣ '녹음 중지'를 누르고 내<br> 
+    2️⃣ '녹음 완료' 버튼을 누르고 내<br> 
     3️⃣ '녹음 시작' 버튼을 다시 눌러 대답하고 바로 질문하기
     """
     ,  unsafe_allow_html=True)
