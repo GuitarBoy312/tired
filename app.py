@@ -104,13 +104,13 @@ st.divider()
 
 #확장 설명
 with st.expander("사용방법", expanded=True):
-    st.write(
+    st.markdown(
     """     
-    1️⃣ '녹음 시작' 버튼을 눌러 인공지능 선생님에게 질문하기
-    2️⃣ '녹음 중지'를 누르고 내 
+    1️⃣ '녹음 시작' 버튼을 눌러 인공지능 선생님에게 질문하기<br>
+    2️⃣ '녹음 중지'를 누르고 내<br> 
     3️⃣ '녹음 시작' 버튼을 다시 눌러 대답하고 바로 질문하기
     """
-    )
+    ,  unsafe_allow_html=True)
     
 # 버튼 배치
 col1, col2 = st.columns([1,1])
