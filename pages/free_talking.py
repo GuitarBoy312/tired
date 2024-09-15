@@ -100,7 +100,7 @@ with st.expander("❗❗ 글상자를 펼쳐 사용방법을 읽어보세요 �
     """
     ,  unsafe_allow_html=True)
     st.divider()
-    st.write("🔸이번 단원과 관련하여 궁금한 점을 물어보세요." 
+    st.write("🔸이번 단원과 관련하여 궁금한 점을 물어보세요.") 
     st.write("🔸영어에 대해 전반적으로 궁금한 점을 한국어나 영어로 질문하세요.")
     st.write("🔸영어로 잉글링과 자유롭게 대화할 수도 있어요.")
 
