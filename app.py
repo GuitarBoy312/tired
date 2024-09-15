@@ -118,6 +118,9 @@ with col2:
 
 # 사이드바 구성
 with st.sidebar:
+    # 메시지 표시
+    display_messages()
+    
     st.header(
         '''
 사용방법
@@ -136,5 +139,4 @@ with st.sidebar:
     st.subheader("선생님의 질문을 듣고, 다음 보기 중 골라서 대답해 보세요.")
     st.markdown("1️⃣ Yes, I am.<br>2️⃣ No, I'm not.", unsafe_allow_html=True)
 
-# 메시지 표시
-display_messages()
+
