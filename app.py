@@ -119,12 +119,12 @@ with st.expander("❗❗ 글상자를 펼쳐 사용방법을 읽어보세요 �
     st.divider()
     st.write("다음 보기 중 골라서 잉글링에게 질문해 보세요.")
     st.markdown('''
-    🔸 Are you happy?(아 유 해피?)<br>
-    🔸 Are you sad?(아 유 새드?)<br>
-    🔸 Are you angry?(아 유 앵그리?)<br>
-    🔸 Are you hungry?(아 유 헝그리?)<br>
-    🔸 Are you thirsty?(아 유 떨스티?)<br>
-    🔸 Are you tired?(아 유 다이얼드?)
+    🔸 Are you happy? (아 유 해피?)<br>
+    🔸 Are you sad? (아 유 새드?)<br>
+    🔸 Are you angry? (아 유 앵그리?)<br>
+    🔸 Are you hungry? (아 유 헝그리?)<br>
+    🔸 Are you thirsty? (아 유 떨스티?)<br>
+    🔸 Are you tired? (아 유 다이얼드?)
     ''', unsafe_allow_html=True)
     st.divider()
     st.write("잉글링의 질문을 듣고, 다음 보기 중 골라서 대답해 보세요.")
