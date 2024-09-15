@@ -46,7 +46,7 @@ I'm Happy
 
 # 음성을 녹음하고 텍스트로 변환하는 함수
 def record_and_transcribe():
-    audio = audiorecorder("녹음 시작", pause_prompt="잠깐 멈춤", "녹음 완료" )
+    audio = audiorecorder("녹음 시작", "녹음 완료", pause_prompt="잠깐 멈춤")
     
     if len(audio) > 0:
         st.success("녹음이 완료되었습니다. 변환 중입니다...")
