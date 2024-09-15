@@ -107,30 +107,30 @@ st.divider()
 with st.expander("❗❗ 글상자를 펼쳐 사용방법을 읽어보세요 👆✅", expanded=False):
     st.markdown(
     """     
-    1️⃣ [녹음 시작] 버튼을 눌러 잉글링에게 말하기<br>
-    2️⃣ [녹음 완료] 버튼을 누르고 내가 한 말과 잉글링의 대답 들어보기<br> 
-    3️⃣ [녹음 시작] 버튼을 다시 눌러 대답하고 이어서 바로 질문하기<br>
-    4️⃣ 1~3번을 반복하기. 말문이 막힐 땐 [잠깐 멈춤] 버튼을 누르기<br>
+    1️⃣ [녹음 시작] 버튼을 눌러 잉글링에게 말하기.<br>
+    2️⃣ [녹음 완료] 버튼을 누르고 내가 한 말과 잉글링의 대답 들어보기.<br> 
+    3️⃣ [녹음 시작] 버튼을 다시 눌러 대답하고 이어서 바로 질문하기.<br>
+    4️⃣ 1~3번을 반복하기. 말문이 막힐 땐 [잠깐 멈춤] 버튼을 누르기.<br>
     <br>
     🙏 잉글링은 완벽하게 이해하거나 제대로 대답하지 않을 수 있어요.<br> 
-    🙏 그럴 때에는 [처음부터 다시하기] 버튼을 눌러주세요
+    🙏 그럴 때에는 [처음부터 다시하기] 버튼을 눌러주세요.
     """
     ,  unsafe_allow_html=True)
     st.divider()
-    st.write("다음 보기 중 골라서 잉글링에게 질문해 보세요")
+    st.write("다음 보기 중 골라서 잉글링에게 질문해 보세요.")
     st.markdown('''
-    🔸 Are you happy?<br>
-    🔸 Are you sad?<br>
-    🔸 Are you angry?<br>
-    🔸 Are you hungry?<br>
-    🔸 Are you thirsty?<br>
-    🔸 Are you tired?
+    🔸 Are you happy?(아 유 해피?)<br>
+    🔸 Are you sad?(아 유 새드?)<br>
+    🔸 Are you angry?(아 유 앵그리?)<br>
+    🔸 Are you hungry?(아 유 헝그리?)<br>
+    🔸 Are you thirsty?(아 유 떨스티?)<br>
+    🔸 Are you tired?(아 유 다이얼드?)
     ''', unsafe_allow_html=True)
     st.divider()
     st.write("잉글링의 질문을 듣고, 다음 보기 중 골라서 대답해 보세요.")
     st.markdown('''
-    🔸 Yes, I am.<br>
-    🔸 No, I'm not.
+    🔸 Yes, I am.(예스 아이 앰.)<br>
+    🔸 No, I'm not.(노 아임 낫.)
     ''', unsafe_allow_html=True)
     
 # 버튼 배치
