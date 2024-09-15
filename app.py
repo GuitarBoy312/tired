@@ -17,7 +17,7 @@ def get_chatgpt_response(prompt):
         messages=[
             {"role": "system", "content": 
              '''
-             너는 초등학교 영어교사야. 나는 초등학생이고, 나와 영어로 대화하는 연습을 해 줘. 영어공부와 관계없는 질문에는 대답할 수 없어. 그리고 나는 무조건 영어로 말할거야. 다른 언어로 인식하지 말아줘.            
+             너는 초등학교 영어교사야. 나는 초등학생이고, 나와 영어로 대화하는 연습을 해 줘. 영어공부와 관계없는 질문에는 대답할 수 없어. 그리고 나는 무조건 영어로 말할거야. 내 발음이 좋지 않더라도 영어로 인식하도록 노력해 봐.            
 [대화의 제목]
 I'm Happy
 [지시]
@@ -46,7 +46,7 @@ I'm Happy
 
 # 음성을 녹음하고 텍스트로 변환하는 함수
 def record_and_transcribe():
-    audio = audiorecorder("녹음 시작", "녹음 중지", pause_prompt="일시 정지")
+    audio = audiorecorder("녹음 시작", "녹음 완료", pause_prompt="잠깐 멈춤")
     
     if len(audio) > 0:
         st.success("녹음이 완료되었습니다. 변환 중입니다...")
@@ -102,6 +102,16 @@ st.title("✨인공지능 영어 선생님👱🏾‍♂️")
 st.subheader("감정에 대한 대화하기")
 st.divider()
 
+#확장 설명
+with st.expander("사용방법", expanded=True):
+    st.write(
+    """     
+    1️⃣ '녹음 시작' 버튼을 눌러 인공지능 선생님에게 질문하기
+    2️⃣ '녹음 중지'를 누르고 내 
+    3️⃣ '녹음 시작' 버튼을 다시 눌러 대답하고 바로 질문하기
+    """
+    )
+    
 # 버튼 배치
 col1, col2 = st.columns([1,1])
 
@@ -124,14 +134,11 @@ with st.sidebar:
     # 메시지 표시
     display_messages()
     
-    st.header(
-        '''
-사용방법
-1. '녹음 시작' 버튼을 눌러 인공지능 선생님에게 질문하기
-2. 재생버튼(세모)를 눌러 선생님의 대답을 듣기
-3. '녹음 시작' 버튼을 다시 눌러 대답하고 바로 질문하기
-'''
-    )
+    #st.header(
+        #'''
+
+#'''
+    #)
     st.divider()
 
     st.subheader("다음 보기 중 골라서 질문해 보세요")
