@@ -99,28 +99,39 @@ def display_messages():
 # Streamlit UI
 
 # 메인 화면 구성
-st.header("✨인공지능 영어 선생님: 잉글링👱🏾‍♂️")
+st.header("✨인공지능 영어 선생님 잉글링👱🏾‍♂️")
 st.subheader("💕감정이나 느낌에 대한 대화하기")
 st.divider()
 
 #확장 설명
-with st.expander("❗❗ 글상자를 펼쳐 사용방법을 읽어보세요 👉👉", expanded=False):
+with st.expander("❗❗ 글상자를 펼쳐 사용방법을 읽어보세요 👆✅", expanded=False):
     st.markdown(
     """     
-    1️⃣ '녹음 시작' 버튼을 눌러 인공지능 선생님에게 질문하기<br>
-    2️⃣ '녹음 완료' 버튼을 누르고 내가 한 말과 잉글링의 대답 들어보기<br> 
-    3️⃣ '녹음 시작' 버튼을 다시 눌러 대답하고 이어서 바로 질문하기<br>
-    4️⃣ 1~3번을 반복하기. 말문이 막힐 땐 '잠깐 멈춤" 버튼을 누르기<br>
-    5️⃣ 오류가 생길 땐 '처음부터 다시하기' 버튼을 누르기<br>
-    🙏 잉글링은 완벽하지 않아요. 말을 잘못 이해할 수 있어요 🙏 
+    1️⃣ [녹음 시작] 버튼을 눌러 잉글링에게 말하기<br>
+    2️⃣ [녹음 완료] 버튼을 누르고 내가 한 말과 잉글링의 대답 들어보기<br> 
+    3️⃣ [녹음 시작] 버튼을 다시 눌러 대답하고 이어서 바로 질문하기<br>
+    4️⃣ 1~3번을 반복하기. 말문이 막힐 땐 [잠깐 멈춤] 버튼을 누르기<br>
+    <br>
+    🙏 잉글링은 완벽하게 이해하거나 제대로 대답하지 않을 수 있어요.<br> 
+    🙏 그럴 때에는 [처음부터 다시하기] 버튼을 눌러주세요
     """
     ,  unsafe_allow_html=True)
     st.divider()
     st.write("다음 보기 중 골라서 잉글링에게 질문해 보세요")
-    st.markdown("1️⃣ Are you happy?<br>2️⃣ Are you sad?<br>3️⃣ Are you angry?<br>4️⃣ Are you hungry?<br>5️⃣ Are you thirsty?<br>6️⃣ Are you tired?", unsafe_allow_html=True)
+    st.markdown('''
+    🔸 Are you happy?<br>
+    🔸 Are you sad?<br>
+    🔸 Are you angry?<br>
+    🔸 Are you hungry?<br>
+    🔸 Are you thirsty?<br>
+    🔸 Are you tired?
+    ''', unsafe_allow_html=True)
     st.divider()
     st.write("잉글링의 질문을 듣고, 다음 보기 중 골라서 대답해 보세요.")
-    st.markdown("1️⃣ Yes, I am.<br>2️⃣ No, I'm not.", unsafe_allow_html=True)
+    st.markdown('''
+    🔸 Yes, I am.<br>
+    🔸 No, I'm not.
+    ''', unsafe_allow_html=True)
     
 # 버튼 배치
 col1, col2 = st.columns([1,1])
