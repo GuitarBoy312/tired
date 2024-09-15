@@ -79,6 +79,7 @@ def text_to_speech_openai(text):
         )
         with open(speech_file_path, "wb") as f:
             f.write(response.content)  # 음성 파일을 저장
+        st.write("인공지능 선생님의 대답 듣기")    
         st.audio(str(speech_file_path))  # 음성을 Streamlit에서 재생
     except Exception as e:
         st.error(f"텍스트를 음성으로 변환하는 중 오류가 발생했습니다: {e}")
