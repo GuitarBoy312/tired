@@ -112,6 +112,7 @@ with st.expander("사용방법", expanded=True):
     3️⃣ '녹음 시작' 버튼을 다시 눌러 대답하고 바로 질문하기
     """
     ,  unsafe_allow_html=True)
+    st.divider()
     st.write("다음 보기 중 골라서 질문해 보세요")
     st.markdown("1️⃣ Are you happy?<br>2️⃣ Are you sad?<br>3️⃣ Are you angry?<br>4️⃣ Are you hungry?<br>5️⃣ Are you thirsty?<br>6️⃣ Are you tired?", unsafe_allow_html=True)
     st.divider()
