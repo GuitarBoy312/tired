@@ -10,17 +10,6 @@ from io import BytesIO
 # OpenAI API 키 설정
 client = OpenAI(api_key=st.secrets["openai_api_key"])
 
-# 채팅 히스토리 초기화
-if 'chat_history' not in st.session_state:
-    st.session_state['chat_history'] = [
-        {"role": "system", "content": 
-         '''
-        너는 초등학교 영어교사이고 이름은 잉글링(engling)이야. 나는 초등학생이야. 나와 영어로 대화하는 연습을 하거나, 영어 표현에 대한 질문에 한국어로 대답을 해줘. 
-        영어공부와 관계없는 질문에는 대답할 수 없어. 나의 영어 수준은 CEFR A1 수준이야. 영어로 대화 할 때, 나에게 맞는 수준으로 말해줘.
-         '''
-        }
-    ]
-
 # ChatGPT API 호출
 def get_chatgpt_response(prompt):
     st.session_state['chat_history'].append({"role": "user", "content": prompt})
@@ -72,13 +61,16 @@ def text_to_speech_openai(text):
     except Exception as e:
         st.error(f"텍스트를 음성으로 변환하는 중 오류가 발생했습니다: {e}")
 
-# 메시지 출력 함수
-def display_messages():
-    for message in st.session_state['chat_history']:
-        if message['role'] == 'user':
-            st.chat_message("user").write(message['content'])
-        elif message['role'] == 'assistant':
-            st.chat_message("assistant").write(message['content'])
+# 채팅 히스토리 초기화
+if 'chat_history' not in st.session_state:
+    st.session_state['chat_history'] = [
+        {"role": "system", "content": 
+         '''
+        너는 초등학교 영어교사이고 이름은 잉글링(engling)이야. 나는 초등학생이야. 나와 영어로 대화하는 연습을 하거나, 영어 표현에 대한 질문에 한국어로 대답을 해줘. 
+        영어공부와 관계없는 질문에는 대답할 수 없어.  나의 영어 수준은 CEFR A1 수준이야. 영어로 대화 할 때, 나에게 맞는 수준으로 말해줘.
+         '''
+        }
+    ]
 
 # Streamlit UI
 
@@ -104,9 +96,6 @@ with st.expander("❗❗ 글상자를 펼쳐 사용방법을 읽어보세요. �
     st.write("🔸이번 단원과 관련하여 궁금한 점을 물어볼 수 있어요.") 
     st.write("🔸영어에 대해 전반적으로 궁금한 점을 한국어나 영어 중 원하는 말로 질문해도 돼요.")
     st.write("🔸영어로 잉글링과 자유롭게 대화할 수도 있어요.")
-
-# 대화 기록 표시
-display_messages()
     
 # 버튼 배치
 col1, col2 = st.columns([1,1])
@@ -119,13 +108,15 @@ with col1:
             text_to_speech_openai(response)
 
 with col2:
-    user_input = st.text_input("영어로 대화를 입력하세요:")
-    if user_input:
-        response = get_chatgpt_response(user_input)
-        if response:
-            text_to_speech_openai(response)
+    if st.button("처음부터 다시하기"):
+        st.session_state['chat_history'] = [st.session_state['chat_history'][0]]  # 시스템 메시지만 유지
+        st.experimental_rerun()
 
-# 대화 초기화 버튼
-if st.button("처음부터 다시하기"):
-    st.session_state['chat_history'] = [st.session_state['chat_history'][0]]  # 시스템 메시지만 유지
-    st.experimental_rerun()
+# 사이드바 구성
+with st.sidebar:
+    st.header("대화 기록")
+    for message in st.session_state['chat_history'][1:]:  # 시스템 메시지 제외
+        if message['role'] == 'user':
+            st.chat_message("user").write(message['content'])
+        else:
+            st.chat_message("assistant").write(message['content'])
