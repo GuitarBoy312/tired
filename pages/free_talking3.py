@@ -7,16 +7,18 @@ from audiorecorder import audiorecorder
 # OpenAI API 키 설정
 client = OpenAI(api_key=st.secrets["openai_api_key"])
 
+# 시스템 메시지 정의
+SYSTEM_MESSAGE = {
+    "role": "system", 
+    "content": '''
+    너는 초등학교 영어교사이고 이름은 잉글링(engling)이야. 나는 초등학생이야. 나와 영어로 대화하는 연습을 하거나, 영어 표현에 대한 질문에 한국어로 대답을 해줘. 
+    영어공부와 관계없는 질문에는 대답할 수 없어. 나의 영어 수준은 CEFR A1 수준이야. 영어로 대화 할 때, 나에게 맞는 수준으로 말해줘.
+    '''
+}
+
 # 초기화 함수
 def initialize_session():
-    st.session_state['chat_history'] = [
-        {"role": "system", "content": 
-         '''
-        너는 초등학교 영어교사이고 이름은 잉글링(engling)이야. 나는 초등학생이야. 나와 영어로 대화하는 연습을 하거나, 영어 표현에 대한 질문에 한국어로 대답을 해줘. 
-        영어공부와 관계없는 질문에는 대답할 수 없어.  나의 영어 수준은 CEFR A1 수준이야. 영어로 대화 할 때, 나에게 맞는 수준으로 말해줘.
-         '''
-        }
-    ]
+    st.session_state['chat_history'] = [SYSTEM_MESSAGE]
     st.session_state['audio_data'] = []
     st.session_state['tts_data'] = []
 
