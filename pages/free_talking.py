@@ -81,10 +81,9 @@ st.markdown("**😃자유롭게 대화하기.**")
 st.divider()
 
 # 처음부터 다시하기 버튼
-st.button("처음부터 다시하기", type="primary")
-    if st.button("처음부터 다시하기"):
-        initialize_session()
-        st.rerun()
+if st.button("처음부터 다시하기"):
+    initialize_session()
+    st.rerun()
 
 # 확장 설명
 with st.expander("❗❗ 글상자를 펼쳐 사용방법을 읽어보세요. 👆✅", expanded=False):
