@@ -84,7 +84,7 @@ st.markdown("**😃자유롭게 대화하기.**")
 st.divider()
 
 # 처음부터 다시하기 버튼
-if st.button("처음부터 다시하기",type="primary"):
+if st.button("처음부터 다시하기"):
     initialize_session()
     st.rerun()
 
@@ -96,7 +96,7 @@ with st.expander("❗❗ 글상자를 펼쳐 사용방법을 읽어보세요. �
     2️⃣ [녹음 완료] 버튼을 누르고 내가 한 말과 잉글링의 대답 들어보기.<br> 
     3️⃣ [녹음 시작] 버튼을 다시 눌러 대답하고 이어서 바로 질문하기.<br>
     4️⃣ 1~3번을 반복하기. 말문이 막힐 땐 [잠깐 멈춤] 버튼을 누르기.<br>
-    5️⃣ 녹음을 삭제하려면 [녹음 삭제] 버튼을 누르기.<br>
+    5️⃣ 녹음을 다시 하려면 [녹음 리셋] 버튼을 누르기.<br>
     <br>
     🙏 잉글링은 완벽하게 이해하거나 제대로 대답하지 않을 수 있어요.<br> 
     🙏 그럴 때에는 브라우저의 새로고침🔁 버튼을 눌러주세요.
@@ -118,15 +118,15 @@ with col1:
             text_to_speech_openai(response)
 
 with col2:
-    if st.button("녹음 삭제"):
+    if st.button("녹음 리셋"):
+        # 새로운 audiorecorder 인스턴스를 생성하여 이전 녹음을 "리셋"
+        _ = audiorecorder("녹음 시작", "녹음 완료", pause_prompt="잠깐 멈춤")
         if 'last_recording' in st.session_state:
             del st.session_state['last_recording']
-            if 'last_transcription' in st.session_state:
-                del st.session_state['last_transcription']
-            st.success("방금 한 녹음이 삭제되었습니다.")
-            st.rerun()
-        else:
-            st.warning("삭제할 녹음이 없습니다.")
+        if 'last_transcription' in st.session_state:
+            del st.session_state['last_transcription']
+        st.success("녹음이 리셋되었습니다.")
+        st.rerun()
 
 # 사이드바 구성
 with st.sidebar:
