@@ -2,6 +2,11 @@ import streamlit as st
 from openai import OpenAI
 import io
 from audiorecorder import audiorecorder
+import json
+import os
+
+# 파일 경로 설정
+STATE_FILE = "app_state.json"
 
 # 시스템 메시지 정의
 SYSTEM_MESSAGE = {
@@ -12,29 +17,44 @@ SYSTEM_MESSAGE = {
     '''
 }
 
+# 상태 로드 함수
+def load_state():
+    if os.path.exists(STATE_FILE):
+        with open(STATE_FILE, "r") as f:
+            return json.load(f)
+    return {"chat_history": [SYSTEM_MESSAGE], "audio_data": [], "tts_data": []}
+
+# 상태 저장 함수
+def save_state(state):
+    with open(STATE_FILE, "w") as f:
+        json.dump(state, f)
+
 # 초기화 함수
 def initialize_session():
-    for key in list(st.session_state.keys()):
-        del st.session_state[key]
-    st.session_state['openai_client'] = OpenAI(api_key=st.secrets["openai_api_key"])
-    st.session_state['chat_history'] = [SYSTEM_MESSAGE]
-    st.session_state['audio_data'] = []
-    st.session_state['tts_data'] = []
-    st.session_state['initialized'] = True
+    if os.path.exists(STATE_FILE):
+        os.remove(STATE_FILE)
+    state = {"chat_history": [SYSTEM_MESSAGE], "audio_data": [], "tts_data": []}
+    save_state(state)
+    return state
 
-# 세션 상태 초기화
-if 'initialized' not in st.session_state or not st.session_state['initialized']:
-    initialize_session()
+# 상태 로드 또는 초기화
+if 'state' not in st.session_state:
+    st.session_state['state'] = load_state()
+
+# OpenAI 클라이언트 초기화
+if 'openai_client' not in st.session_state:
+    st.session_state['openai_client'] = OpenAI(api_key=st.secrets["openai_api_key"])
 
 # ChatGPT API 호출
 def get_chatgpt_response(prompt):
-    st.session_state['chat_history'].append({"role": "user", "content": prompt})
+    st.session_state['state']['chat_history'].append({"role": "user", "content": prompt})
     response = st.session_state['openai_client'].chat.completions.create(
         model="gpt-4o-mini",
-        messages=st.session_state['chat_history']
+        messages=st.session_state['state']['chat_history']
     )
     assistant_response = response.choices[0].message.content
-    st.session_state['chat_history'].append({"role": "assistant", "content": assistant_response})
+    st.session_state['state']['chat_history'].append({"role": "assistant", "content": assistant_response})
+    save_state(st.session_state['state'])
     return assistant_response
 
 # 음성을 녹음하고 텍스트로 변환하는 함수
@@ -106,13 +126,13 @@ with col1:
 
 with col2:
     if st.button("처음부터 다시하기"):
-        initialize_session()
+        st.session_state['state'] = initialize_session()
         st.rerun()
 
 # 사이드바 구성
 with st.sidebar:
     st.header("대화 기록")
-    for message in st.session_state['chat_history'][1:]:  # 시스템 메시지 제외
+    for message in st.session_state['state']['chat_history'][1:]:  # 시스템 메시지 제외
         if message['role'] == 'user':
             st.chat_message("user").write(message['content'])
         else:
