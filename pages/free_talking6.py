@@ -43,7 +43,7 @@ def get_chatgpt_response(prompt):
 
 # 음성을 녹음하고 텍스트로 변환하는 함수
 def record_and_transcribe():
-    audio = audiorecorder("녹음 시작", "녹음 완료", pause_prompt="잠깐 멈춤")
+    audio = audiorecorder("녹음 시작", "녹음 완료", pause_prompt="잠깐 멈춤", key="main_recorder")
     
     if len(audio) > 0:
         st.session_state['last_recording'] = audio
@@ -120,7 +120,7 @@ with col1:
 with col2:
     if st.button("녹음 리셋"):
         # 새로운 audiorecorder 인스턴스를 생성하여 이전 녹음을 "리셋"
-        _ = audiorecorder("녹음 시작", "녹음 완료", pause_prompt="잠깐 멈춤")
+        _ = audiorecorder("녹음 시작", "녹음 완료", pause_prompt="잠깐 멈춤", key="reset_recorder")
         if 'last_recording' in st.session_state:
             del st.session_state['last_recording']
         if 'last_transcription' in st.session_state:
