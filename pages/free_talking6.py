@@ -47,6 +47,7 @@ def record_and_transcribe():
     
     if len(audio) > 0:
         st.session_state['last_recording'] = audio
+        st.session_state['last_transcription'] = None
         st.success("녹음이 완료되었습니다. 변환 중입니다...")
         st.write("내가 한 말 듣기")
         st.audio(audio.export().read())
@@ -59,6 +60,7 @@ def record_and_transcribe():
             model="whisper-1",
             file=audio_file
         )
+        st.session_state['last_transcription'] = transcription.text
         return transcription.text
     
     return None
@@ -110,8 +112,8 @@ col1, col2, col3 = st.columns([1,1,1])
 
 with col1:
     user_input_text = record_and_transcribe()
-    if user_input_text:
-        response = get_chatgpt_response(user_input_text)
+    if user_input_text and 'last_transcription' in st.session_state:
+        response = get_chatgpt_response(st.session_state['last_transcription'])
         if response:
             text_to_speech_openai(response)
 
@@ -119,7 +121,10 @@ with col2:
     if st.button("녹음 삭제"):
         if 'last_recording' in st.session_state:
             del st.session_state['last_recording']
+            if 'last_transcription' in st.session_state:
+                del st.session_state['last_transcription']
             st.success("방금 한 녹음이 삭제되었습니다.")
+            st.rerun()
         else:
             st.warning("삭제할 녹음이 없습니다.")
 
