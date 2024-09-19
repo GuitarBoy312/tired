@@ -106,9 +106,7 @@ with col1:
             text_to_speech_openai(response)
 
 with col2:
-    if st.button("처음부터 다시하기"):
-        initialize_session()
-        st.rerun()
+  
 
 # 사이드바 구성
 with st.sidebar:
