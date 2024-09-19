@@ -124,7 +124,10 @@ with col2:
     if st.button("녹음 취소"):
         if st.session_state.get('recording', False):
             st.session_state['recording'] = False
-            _ = audiorecorder("녹음 시작", "녹음 완료", pause_prompt="잠깐 멈춤", key="cancel_recorder")
+            if 'last_recording' in st.session_state:
+                del st.session_state['last_recording']
+            if 'last_transcription' in st.session_state:
+                del st.session_state['last_transcription']
             st.success("녹음이 취소되었습니다. 새로운 녹음을 시작할 수 있습니다.")
             st.rerun()
         else:
