@@ -18,6 +18,9 @@ SYSTEM_MESSAGE = {
 
 # 초기화 함수
 def initialize_session():
+    for key in list(st.session_state.keys()):
+        del st.session_state[key]
+    st.session_state['openai_client'] = OpenAI(api_key=st.secrets["openai_api_key"])
     st.session_state['chat_history'] = [SYSTEM_MESSAGE]
     st.session_state['audio_data'] = []
     st.session_state['tts_data'] = []
@@ -77,16 +80,10 @@ st.header("✨인공지능 영어대화 선생님 잉글링👱🏾‍♂️")
 st.markdown("**😃자유롭게 대화하기.**")
 st.divider()
 
-# 새로고침 버튼 추가
+# 처음부터 다시하기 버튼
 if st.button("처음부터 다시하기"):
-    st.markdown(
-        """
-        <script>
-            window.parent.location.reload();
-        </script>
-        """,
-        unsafe_allow_html=True
-    )
+    initialize_session()
+    st.rerun()
 
 # 확장 설명
 with st.expander("❗❗ 글상자를 펼쳐 사용방법을 읽어보세요. 👆✅", expanded=False):
