@@ -19,8 +19,9 @@ SYSTEM_MESSAGE = {
 # 초기화 함수
 def initialize_session():
     st.session_state['chat_history'] = [SYSTEM_MESSAGE]
+    st.session_state['audio_data'] = []
+    st.session_state['tts_data'] = []
     st.session_state['initialized'] = True
-    st.session_state['recording'] = False
 
 # 세션 상태 초기화
 if 'initialized' not in st.session_state or not st.session_state['initialized']:
@@ -30,7 +31,7 @@ if 'initialized' not in st.session_state or not st.session_state['initialized']:
 def get_chatgpt_response(prompt):
     st.session_state['chat_history'].append({"role": "user", "content": prompt})
     response = st.session_state['openai_client'].chat.completions.create(
-        model="gpt-4-1106-preview",
+        model="gpt-4o-mini",
         messages=st.session_state['chat_history']
     )
     assistant_response = response.choices[0].message.content
@@ -39,11 +40,9 @@ def get_chatgpt_response(prompt):
 
 # 음성을 녹음하고 텍스트로 변환하는 함수
 def record_and_transcribe():
-    st.session_state['recording'] = True
-    audio = audiorecorder("녹음 중...", "녹음 완료", pause_prompt="잠깐 멈춤")
+    audio = audiorecorder("녹음 시작", "녹음 완료", pause_prompt="잠깐 멈춤")
     
     if len(audio) > 0:
-        st.session_state['recording'] = False
         st.success("녹음이 완료되었습니다. 변환 중입니다...")
         st.write("내가 한 말 듣기")
         st.audio(audio.export().read())
@@ -86,9 +85,9 @@ with st.expander("❗❗ 글상자를 펼쳐 사용방법을 읽어보세요. �
     2️⃣ [녹음 완료] 버튼을 누르고 내가 한 말과 잉글링의 대답 들어보기.<br> 
     3️⃣ [녹음 시작] 버튼을 다시 눌러 대답하고 이어서 바로 질문하기.<br>
     4️⃣ 1~3번을 반복하기. 말문이 막힐 땐 [잠깐 멈춤] 버튼을 누르기.<br>
-    5️⃣ 녹음 중 실수했다면 [녹음 삭제] 버튼을 눌러 다시 시작하기.<br>
     <br>
     🙏 잉글링은 완벽하게 이해하거나 제대로 대답하지 않을 수 있어요.<br> 
+    🙏 그럴 때에는 브라우저의 새로고침🔁 버튼을 눌러주세요.
     """
     ,  unsafe_allow_html=True)
     st.divider()
@@ -107,8 +106,8 @@ with col1:
             text_to_speech_openai(response)
 
 with col2:
-    if st.button("녹음 삭제", disabled=not st.session_state['recording']):
-        st.session_state['recording'] = False
+    if st.button("처음부터 다시하기"):
+        initialize_session()
         st.experimental_rerun()
 
 # 사이드바 구성
