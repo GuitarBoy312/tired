@@ -5,7 +5,8 @@ from pydub import AudioSegment
 from audiorecorder import audiorecorder
 
 # OpenAI API 키 설정
-client = OpenAI(api_key=st.secrets["openai_api_key"])
+if 'openai_client' not in st.session_state:
+    st.session_state['openai_client'] = OpenAI(api_key=st.secrets["openai_api_key"])
 
 # 시스템 메시지 정의
 SYSTEM_MESSAGE = {
@@ -22,7 +23,6 @@ def initialize_session():
     st.session_state['audio_data'] = []
     st.session_state['tts_data'] = []
     st.session_state['initialized'] = True
-    st.session_state['openai_client'] = OpenAI(api_key=st.secrets["openai_api_key"])
 
 # 세션 상태 초기화
 if 'initialized' not in st.session_state or not st.session_state['initialized']:
@@ -38,7 +38,7 @@ def get_chatgpt_response(prompt):
         st.write(f"{msg['role']}: {msg['content'][:50]}...")  # 내용의 처음 50자만 표시
     
     response = st.session_state['openai_client'].chat.completions.create(
-        model="gpt-4o-mini",
+        model="gpt-4-1106-preview",
         messages=st.session_state['chat_history']
     )
     assistant_response = response.choices[0].message.content
