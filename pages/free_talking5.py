@@ -3,10 +3,6 @@ from openai import OpenAI
 import io
 from audiorecorder import audiorecorder
 
-# OpenAI API 키 설정
-if 'openai_client' not in st.session_state:
-    st.session_state['openai_client'] = OpenAI(api_key=st.secrets["openai_api_key"])
-
 # 시스템 메시지 정의
 SYSTEM_MESSAGE = {
     "role": "system", 
@@ -18,6 +14,9 @@ SYSTEM_MESSAGE = {
 
 # 초기화 함수
 def initialize_session():
+    for key in list(st.session_state.keys()):
+        del st.session_state[key]
+    st.session_state['openai_client'] = OpenAI(api_key=st.secrets["openai_api_key"])
     st.session_state['chat_history'] = [SYSTEM_MESSAGE]
     st.session_state['audio_data'] = []
     st.session_state['tts_data'] = []
@@ -95,7 +94,6 @@ with st.expander("❗❗ 글상자를 펼쳐 사용방법을 읽어보세요. �
     st.write("🔸영어에 대해 전반적으로 궁금한 점을 한국어나 영어 중 원하는 말로 질문해도 돼요.")
     st.write("🔸영어로 잉글링과 자유롭게 대화할 수도 있어요.")
 
-
 # 버튼 배치
 col1, col2 = st.columns([1,1])
 
@@ -110,8 +108,6 @@ with col2:
     if st.button("처음부터 다시하기"):
         initialize_session()
         st.rerun()
-
-
 
 # 사이드바 구성
 with st.sidebar:
