@@ -21,16 +21,23 @@ def initialize_session():
     st.session_state['chat_history'] = [SYSTEM_MESSAGE]
     st.session_state['audio_data'] = []
     st.session_state['tts_data'] = []
+    st.session_state['initialized'] = True
+    st.session_state['openai_client'] = OpenAI(api_key=st.secrets["openai_api_key"])
 
 # 세션 상태 초기화
-if 'initialized' not in st.session_state:
+if 'initialized' not in st.session_state or not st.session_state['initialized']:
     initialize_session()
-    st.session_state['initialized'] = True
 
 # ChatGPT API 호출
 def get_chatgpt_response(prompt):
     st.session_state['chat_history'].append({"role": "user", "content": prompt})
-    response = client.chat.completions.create(
+    
+    # 디버깅: 현재 대화 기록 출력
+    st.write("현재 대화 기록:")
+    for msg in st.session_state['chat_history']:
+        st.write(f"{msg['role']}: {msg['content'][:50]}...")  # 내용의 처음 50자만 표시
+    
+    response = st.session_state['openai_client'].chat.completions.create(
         model="gpt-4o-mini",
         messages=st.session_state['chat_history']
     )
@@ -55,7 +62,7 @@ def record_and_transcribe():
         # Whisper API를 사용해 음성을 텍스트로 변환
         audio_file = io.BytesIO(audio_bytes.getvalue())
         audio_file.name = "audio.wav"
-        transcription = client.audio.transcriptions.create(
+        transcription = st.session_state['openai_client'].audio.transcriptions.create(
             model="whisper-1",
             file=audio_file
         )
@@ -66,7 +73,7 @@ def record_and_transcribe():
 # 텍스트를 음성으로 변환하고 재생하는 함수
 def text_to_speech_openai(text):
     try:
-        response = client.audio.speech.create(
+        response = st.session_state['openai_client'].audio.speech.create(
             model="tts-1",
             voice="shimmer",
             input=text
@@ -108,3 +115,9 @@ with st.sidebar:
             st.chat_message("user").write(message['content'])
         else:
             st.chat_message("assistant").write(message['content'])
+
+# 디버깅: 세션 상태 출력
+st.write("세션 상태:")
+st.write(f"초기화 여부: {st.session_state['initialized']}")
+st.write(f"대화 기록 길이: {len(st.session_state['chat_history'])}")
+st.write(f"시스템 메시지: {st.session_state['chat_history'][0]['content'][:50]}...")  # 시스템 메시지의 처음 50자만 표시
