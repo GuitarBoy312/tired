@@ -25,6 +25,7 @@ def initialize_session():
     st.session_state['audio_data'] = []
     st.session_state['tts_data'] = []
     st.session_state['initialized'] = True
+    st.session_state['recording'] = False
 
 # 세션 상태 초기화
 if 'initialized' not in st.session_state or not st.session_state['initialized']:
@@ -43,9 +44,11 @@ def get_chatgpt_response(prompt):
 
 # 음성을 녹음하고 텍스트로 변환하는 함수
 def record_and_transcribe():
+    st.session_state['recording'] = True
     audio = audiorecorder("녹음 시작", "녹음 완료", pause_prompt="잠깐 멈춤", key="main_recorder")
     
     if len(audio) > 0:
+        st.session_state['recording'] = False
         st.session_state['last_recording'] = audio
         st.session_state['last_transcription'] = None
         st.success("녹음이 완료되었습니다. 변환 중입니다...")
@@ -96,7 +99,7 @@ with st.expander("❗❗ 글상자를 펼쳐 사용방법을 읽어보세요. �
     2️⃣ [녹음 완료] 버튼을 누르고 내가 한 말과 잉글링의 대답 들어보기.<br> 
     3️⃣ [녹음 시작] 버튼을 다시 눌러 대답하고 이어서 바로 질문하기.<br>
     4️⃣ 1~3번을 반복하기. 말문이 막힐 땐 [잠깐 멈춤] 버튼을 누르기.<br>
-    5️⃣ 녹음을 다시 하려면 [녹음 리셋] 버튼을 누르기.<br>
+    5️⃣ 녹음을 취소하려면 [녹음 취소] 버튼을 누르기.<br>
     <br>
     🙏 잉글링은 완벽하게 이해하거나 제대로 대답하지 않을 수 있어요.<br> 
     🙏 그럴 때에는 브라우저의 새로고침🔁 버튼을 눌러주세요.
@@ -118,15 +121,14 @@ with col1:
             text_to_speech_openai(response)
 
 with col2:
-    if st.button("녹음 리셋"):
-        # 새로운 audiorecorder 인스턴스를 생성하여 이전 녹음을 "리셋"
-        _ = audiorecorder("녹음 시작", "녹음 완료", pause_prompt="잠깐 멈춤", key="reset_recorder")
-        if 'last_recording' in st.session_state:
-            del st.session_state['last_recording']
-        if 'last_transcription' in st.session_state:
-            del st.session_state['last_transcription']
-        st.success("녹음이 리셋되었습니다.")
-        st.rerun()
+    if st.button("녹음 취소"):
+        if st.session_state.get('recording', False):
+            st.session_state['recording'] = False
+            _ = audiorecorder("녹음 시작", "녹음 완료", pause_prompt="잠깐 멈춤", key="cancel_recorder")
+            st.success("녹음이 취소되었습니다. 새로운 녹음을 시작할 수 있습니다.")
+            st.rerun()
+        else:
+            st.warning("현재 녹음 중이 아닙니다.")
 
 # 사이드바 구성
 with st.sidebar:
