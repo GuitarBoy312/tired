@@ -81,7 +81,7 @@ st.markdown("**😃자유롭게 대화하기.**")
 st.divider()
 
 # 처음부터 다시하기 버튼
-if st.button("처음부터 다시하기"):
+if st.button("처음부터 다시하기", type="primary"):
     initialize_session()
     st.rerun()
 
@@ -95,7 +95,7 @@ with st.expander("❗❗ 글상자를 펼쳐 사용방법을 읽어보세요. �
     4️⃣ 1~3번을 반복하기. 말문이 막힐 땐 [잠깐 멈춤] 버튼을 누르기.<br>
     <br>
     🙏 잉글링은 완벽하게 이해하거나 제대로 대답하지 않을 수 있어요.<br> 
-    🙏 그럴 때에는 브라우저의 새로고침🔁 버튼을 눌러주세요.
+    🙏 그럴 때에는 [처음부터 다시하기] 버튼을 눌러주세요.
     """
     ,  unsafe_allow_html=True)
     st.divider()
