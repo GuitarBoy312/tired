@@ -1,11 +1,8 @@
 import streamlit as st
 from openai import OpenAI
-import os
-from pathlib import Path
-from audiorecorder import audiorecorder
+import io
 from pydub import AudioSegment
-from pydub.playback import play
-from io import BytesIO
+from audiorecorder import audiorecorder
 
 # OpenAI API 키 설정
 client = OpenAI(api_key=st.secrets["openai_api_key"])
@@ -20,17 +17,19 @@ def initialize_session():
          '''
         }
     ]
-    st.session_state['reset_counter'] = 0
+    st.session_state['audio_data'] = []
+    st.session_state['tts_data'] = []
 
-# 채팅 히스토리 초기화
-if 'chat_history' not in st.session_state or 'reset_counter' not in st.session_state:
+# 세션 상태 초기화
+if 'initialized' not in st.session_state:
     initialize_session()
+    st.session_state['initialized'] = True
 
 # ChatGPT API 호출
 def get_chatgpt_response(prompt):
     st.session_state['chat_history'].append({"role": "user", "content": prompt})
     response = client.chat.completions.create(
-        model="gpt-4o-mini",  # 사용할 모델
+        model="gpt-4o-mini",
         messages=st.session_state['chat_history']
     )
     assistant_response = response.choices[0].message.content
@@ -46,14 +45,18 @@ def record_and_transcribe():
         st.write("내가 한 말 듣기")
         st.audio(audio.export().read())
         
-        audio_file_path = Path(f"recorded_audio_{st.session_state['reset_counter']}.wav")
-        audio.export(str(audio_file_path), format="wav")
+        # 오디오 데이터를 메모리에 저장
+        audio_bytes = io.BytesIO()
+        audio.export(audio_bytes, format="wav")
+        st.session_state['audio_data'].append(audio_bytes.getvalue())
 
-        with open(audio_file_path, "rb") as audio_file:
-            transcription = client.audio.transcriptions.create(
-                model="whisper-1",
-                file=audio_file
-            )
+        # Whisper API를 사용해 음성을 텍스트로 변환
+        audio_file = io.BytesIO(audio_bytes.getvalue())
+        audio_file.name = "audio.wav"
+        transcription = client.audio.transcriptions.create(
+            model="whisper-1",
+            file=audio_file
+        )
         return transcription.text
     
     return None
@@ -61,16 +64,15 @@ def record_and_transcribe():
 # 텍스트를 음성으로 변환하고 재생하는 함수
 def text_to_speech_openai(text):
     try:
-        speech_file_path = Path(f"speech_{st.session_state['reset_counter']}.mp3")
         response = client.audio.speech.create(
             model="tts-1",
             voice="shimmer",
             input=text
         )
-        with open(speech_file_path, "wb") as f:
-            f.write(response.content)
+        audio_data = response.content
+        st.session_state['tts_data'].append(audio_data)
         st.write("인공지능 선생님의 대답 듣기")    
-        st.audio(str(speech_file_path))
+        st.audio(audio_data)
     except Exception as e:
         st.error(f"텍스트를 음성으로 변환하는 중 오류가 발생했습니다: {e}")
 
@@ -93,15 +95,7 @@ with col1:
 
 with col2:
     if st.button("처음부터 다시하기"):
-        # 이전 오디오 파일 삭제
-        for file in Path('.').glob(f'recorded_audio_{st.session_state["reset_counter"]}.*'):
-            file.unlink(missing_ok=True)
-        for file in Path('.').glob(f'speech_{st.session_state["reset_counter"]}.*'):
-            file.unlink(missing_ok=True)
-        
-        # 세션 초기화 및 카운터 증가
         initialize_session()
-        st.session_state['reset_counter'] += 1
         st.rerun()
 
 # 사이드바 구성
