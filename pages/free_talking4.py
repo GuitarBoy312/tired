@@ -105,7 +105,7 @@ with col1:
         if response:
             text_to_speech_openai(response)
 
-with col2:
+
   
 
 # 사이드바 구성
