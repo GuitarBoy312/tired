@@ -110,7 +110,7 @@ with col1:
 with col2:
     if st.button("처음부터 다시하기"):
         st.session_state['chat_history'] = [st.session_state['chat_history'][0]]  # 시스템 메시지만 유지
-        st.experimental_rerun()
+        st.rerun()
 
 # 사이드바 구성
 with st.sidebar:
