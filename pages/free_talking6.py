@@ -84,7 +84,7 @@ st.markdown("**😃자유롭게 대화하기.**")
 st.divider()
 
 # 처음부터 다시하기 버튼
-if st.button("처음부터 다시하기"):
+if st.button("처음부터 다시하기",type="primary"):
     initialize_session()
     st.rerun()
 
